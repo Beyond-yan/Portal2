@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="IndexSQL">
+	<typeAlias alias="photoInfo" type="com.foxconn.pojo.index.PhotoInfo" />
+	<typeAlias alias="textNews" type="com.foxconn.pojo.trafficNews.TextNews" />
+	<typeAlias alias="magazineNews" type="com.foxconn.pojo.trafficNews.MagazineNews" />
+	<typeAlias alias="videoNews" type="com.foxconn.pojo.trafficNews.VideoNews" />
+	<typeAlias alias="topic" type="com.foxconn.pojo.Communication.Topic" />
+	<typeAlias alias="SURVEY_QUESTIONAIRE" type="com.foxconn.pojo.questionaire.SURVEY_QUESTIONAIRE" />
+	<select id="getIndexPhotosNews" resultClass="photoInfo">
+		<!--modify by david on date 2013/08/18 -->
+		<!-- rewrited by Cube @130824 -->
+	<![CDATA[
+SELECT *
+  FROM (  SELECT a.PHOTOS_NEWS_ID photosNewsID,
+                 b.PHOTO_URL photoURL,
+                 b.PHOTO_DESC photoDesc,
+                 PHOTO_ID photoID,
+                 A.PHOTOS_NEWS_TITLE photoTitle,
+                 a.IS_TEXT_NEWS isTextNews,
+                 trim(A.PROGRAM_TYPE) programType
+            FROM traffic_Photos_News_T a
+                 JOIN TRAFFIC_PHOTO_INFO_T b
+                    ON     a.PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+                       AND b.IS_MAIN_PHOTO = '1'
+                       AND a.PHOTOS_NEWS_STATUS = 7
+                       AND a.IS_DEL = '0'
+                       AND b.IS_DEL = '0'
+                       AND a.PROGRAM_TYPE = '010101'
+                 LEFT JOIN traffic_text_news_info_t c
+                    ON A.PHOTOS_NEWS_ID = C.NEWS_ID
+           WHERE (C.PRESS_DATE <= SYSDATE OR c.PRESS_DATE IS NULL)
+        ORDER BY a.ENTRY_DATE DESC)
+ WHERE ROWNUM <= 5
+	]]>
+
+	</select>
+	<select id="getIndexTextNews" resultClass="textNews">
+		<!--modify by david on date 2013/08/14 -->
+		<!-- rewrited by Cube @130824 -->
+	<![CDATA[
+SELECT *
+  FROM (  SELECT a.news_id newsID,
+                 b.news_title newsTitle,
+                 b.section_postion sectionPosition
+            FROM    TRAFFIC_PAGE_NEWS_REF_T a
+                 JOIN
+                    traffic_text_news_info_t b
+                 ON     a.news_id = b.news_id
+                    AND b.news_part_tag = 1
+                    AND a.is_del = 0
+                    AND b.is_del = '0'
+                    AND a.page_id = '010101'
+                    AND b.NEWS_STATUS = 7
+                    AND B.SECTION_POSTION = 2
+                    and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)
+        ORDER BY b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last)
+ WHERE ROWNUM = 1
+UNION ALL
+SELECT *
+  FROM (  SELECT a.news_id newsID,
+                 b.news_title newsTitle,
+                 b.section_postion sectionPosition
+            FROM    TRAFFIC_PAGE_NEWS_REF_T a
+                 JOIN
+                    traffic_text_news_info_t b
+                 ON     a.news_id = b.news_id
+                    AND b.news_part_tag = 1
+                    AND a.is_del = 0
+                    AND b.is_del = '0'
+                    AND a.page_id = '010101'
+                    AND b.NEWS_STATUS = 7
+                    AND B.SECTION_POSTION = 3
+                    and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)
+        ORDER BY b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last)
+ WHERE ROWNUM = 1
+UNION ALL
+SELECT *
+  FROM (  SELECT a.news_id newsID,
+                 b.news_title newsTitle,
+                 b.section_postion sectionPosition
+            FROM    TRAFFIC_PAGE_NEWS_REF_T a
+                 JOIN
+                    traffic_text_news_info_t b
+                 ON     a.news_id = b.news_id
+                    AND b.news_part_tag = 1
+                    AND a.is_del = 0
+                    AND b.is_del = '0'
+                    AND a.page_id = '010101'
+                    AND b.NEWS_STATUS = 7
+                    AND B.SECTION_POSTION = 4
+                    and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)
+        ORDER BY b.STICK_STATE desc nulls last,b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last)
+ WHERE ROWNUM <= 4
+	]]>
+	</select>
+	
+	<select id="getIndexNews" resultClass="textNews">
+		<!--modify by david on date 2013/08/14 -->
+		<!-- rewrited by Cube @130824 01010902 010116 01010901-->
+	<![CDATA[
+	
+			SELECT *
+		  FROM (  SELECT a.news_id newsID,
+		                 b.news_title newsTitle,
+		                 b.section_postion sectionPosition
+		            FROM    TRAFFIC_PAGE_NEWS_REF_T a
+		                 JOIN
+		                    traffic_text_news_info_t b
+		                 ON     a.news_id = b.news_id
+		                    AND b.news_part_tag = 1
+		                    AND a.is_del = 0
+		                    AND b.is_del = '0'
+		                    AND a.page_id = '01010901'
+		                    AND b.NEWS_STATUS = 7
+		                    AND B.SECTION_POSTION = 2
+		                    and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)
+		        ORDER BY b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last)
+		 WHERE ROWNUM = 1
+		UNION ALL
+		SELECT *
+		  FROM (  SELECT a.news_id newsID,
+		                 b.news_title newsTitle,
+		                 b.section_postion sectionPosition
+		            FROM    TRAFFIC_PAGE_NEWS_REF_T a
+		                 JOIN
+		                    traffic_text_news_info_t b
+		                 ON     a.news_id = b.news_id
+		                    AND b.news_part_tag = 1
+		                    AND a.is_del = 0
+		                    AND b.is_del = '0'
+		                    AND a.page_id = '01010901'
+		                    AND b.NEWS_STATUS = 7
+		                    AND B.SECTION_POSTION = 3
+		                    and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)
+		        ORDER BY b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last)
+		 WHERE ROWNUM = 1
+		UNION ALL
+		SELECT *
+		  FROM (  SELECT a.news_id newsID,
+		                 b.news_title newsTitle,
+		                 b.section_postion sectionPosition
+		            FROM    TRAFFIC_PAGE_NEWS_REF_T a
+		                 JOIN
+		                    traffic_text_news_info_t b
+		                 ON     a.news_id = b.news_id
+		                    AND b.news_part_tag = 1
+		                    AND a.is_del = 0
+		                    AND b.is_del = '0'
+		                    AND a.page_id = '01010901'
+		                    AND b.NEWS_STATUS = 7
+		                    AND B.SECTION_POSTION = 4
+		                    and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)
+		        ORDER BY b.STICK_STATE desc nulls last,b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last)
+		 WHERE ROWNUM <= 6
+	]]>
+	</select>
+	
+	<select id="getIndexMagazineNews" resultClass="magazineNews">
+		<!--modify by david on date 2013/08/17 -->
+		<!-- rewrited by Cube @130824 -->
+	<![CDATA[
+SELECT *
+  FROM (  SELECT a.magazine_id magazineID,
+                 A.MAGAZINE_TITLE magazineTitle,
+                 A.MAGAZINE_NUMBER magazineNum,
+                 A.MAIN_PHOTOS_URL photoURL
+            FROM TRAFFIC_MAGAZINE_INFO_T a
+           WHERE A.IS_DEL = '0' AND MAGAZINE_STATUS = 7
+        ORDER BY TO_DATE (MAGAZINE_NUMBER, 'yyyy/mm') DESC)
+ WHERE ROWNUM = 1
+	]]>
+	</select>
+	<select id="getIndexVideo" resultClass="videoNews">
+	    <![CDATA[
+SELECT *
+  FROM (  SELECT VIDEO_NEWS_ID videoNewsId,
+                 VIDEO_NEWS_NAME videoNewsName,
+                 MAIN_PHOTOS_URL mainPhotosUrl,
+                 VIDEO_URL videoUrl
+            FROM TRAFFIC_VIDEO_NEWS_T
+           WHERE IS_DEL = '0' AND VIDEO_NEWS_STATUS = 7
+        ORDER BY entry_date DESC)
+ WHERE ROWNUM = 1
+	    ]]>
+	</select>
+	
+	<select id="getIndexTopic" resultClass="topic">
+	    <![CDATA[
+SELECT *
+  FROM (  SELECT OPTION_ID, OPTION_TITLE
+            FROM TRAFFIC_OPTION_COLLECT_T
+           WHERE option_status = 7 AND is_del = 0
+        ORDER BY VALID_DATE_S DESC)
+ WHERE ROWNUM = 1
+	    ]]>
+	</select>
+	
+	<select id="getIndexQuestionaire" resultClass="SURVEY_QUESTIONAIRE">
+	    <![CDATA[
+SELECT *
+  FROM (  SELECT *
+            FROM SURVEY_QUESTIONAIRE
+           WHERE SHOW_ON_INDEX = 1 AND IS_DEL = 0
+        ORDER BY QTE_EXPIRES DESC)
+ WHERE ROWNUM = 1
+	    ]]>
+	</select>	
+		
+		<select id="getUpToDateAnnouncement" parameterClass="java.lang.String" resultClass="textNews">
+	 
+select c.news_id newsID,
+       a.News_Title newsTitle,
+       to_char(a.entry_date, 'yyyy/MM/dd') entryDate,
+       a.entry_user entryuser,
+       a.News_Status newsStatusID,
+       b.info_name newsStatusName,
+       a.APPROVALER approvaler,
+       c.PAGE_ID programType,
+       c.IS_FIRST isFirst
+  from TRAFFIC_PAGE_NEWS_REF_T c
+  join Traffic_Text_News_Info_T a on c.news_id = a.NEWS_ID
+                                 and c.is_del = '0'
+  join Traffic_Base_Info_T b on a.News_Status = b.Info_ID
+                            and b.is_del = '0'
+                            and a.is_del = '0'
+ where a.News_Part_Tag = '1'
+   and c.page_id =#programType#    and  a.News_Status=7
+    <![CDATA[and rownum <11]]>
+	   
+	</select>
+</sqlMap>

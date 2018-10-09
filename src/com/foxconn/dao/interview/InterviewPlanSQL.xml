@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="InterviewPlan">
+ 	<typeAlias alias="interviewPlan" type="com.foxconn.pojo.interview.InterviewPlan"/>
+ 	
+ 	<select id="getInterviewPlan" resultClass="interviewPlan">
+ 		select * from TRAFFIC_INTERVIEWPLAN_INFO_T where 
+ 			IS_DEL=0 and IS_EXPIRE=0 order by CREATE_DATE desc
+ 	</select>
+ 
+ </sqlMap>

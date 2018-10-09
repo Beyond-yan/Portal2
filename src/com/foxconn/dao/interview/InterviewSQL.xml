@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Interview">
+	<typeAlias alias="interview" type="com.foxconn.pojo.interview.Interview" />
+	<typeAlias alias="interviewScenePhotos" type="com.foxconn.pojo.interview.InterviewScenePhotos" />
+
+	<select id="getGuestInfo" resultClass="interview">
+		select t.interview_ID as
+		interviewId,
+		t.guest_photos_url as guestPhotosUrl,
+		t.INTERVIEW_PHOTOS_URL as interviewPhotosUrl,
+		t.INTERVIEW_PHOTOS_NAME as interviewPhotosName,
+		t.guest_desc as
+		guestDesc,
+		t.interview_summary as interviewSummary,
+		t.VIDEO_PHOTOS_URL as videoPhotosUrl,
+		t.SCENE_PHOTOS_ID as scenePhotosId,
+		t.interview_content
+		as interviewContent,
+		INTERVIEW_TITLE interviewTitle
+		from TRAFFIC_interview_INFO_T t
+		where t.status=7
+		and
+		t.interview_ID = #interviewId#
+	</select>
+
+	<select id="getInterviewList" parameterClass="Map" resultClass="interview">
+	<![CDATA[
+SELECT interviewId,
+       interviewPhotosUrl,
+       guestPhotosUrl,
+       interviewTitle,
+       interviewDate,
+       guestName,
+       guestDesc,
+       interviewSummary
+  FROM (SELECT ROWNUM rn, t.*
+          FROM (  SELECT interview_ID AS interviewId,
+                         interview_photos_url AS interviewPhotosUrl,
+                         GUEST_PHOTOS_URL AS guestPhotosUrl,
+                         interview_title AS interviewTitle,
+                         interview_date AS interviewDate,
+                         guest_name AS guestName,
+                         guest_desc AS guestDesc,
+                         interview_summary AS interviewSummary
+                    FROM traffic_interview_info_t
+                   WHERE status = 7 AND is_del = '0'
+                ORDER BY to_date(interview_date,'yyyy/mm/dd') DESC) t
+         WHERE ROWNUM <= #rEnd#)
+ WHERE rn >= #rStart#
+ 	]]>
+	</select>
+
+	<select id="getInterviewCount" resultClass="Integer">
+		SELECT COUNT (*) cnt
+		FROM traffic_interview_info_t
+		WHERE status = 7 AND is_del = '0'
+	</select>
+
+	<select id="getInterviewScenePhotos" resultClass="interviewScenePhotos">
+		select 
+			SCENE_PHOTOS_ID AS scenePhotosId,
+			SCENE_PHOTOS_NAME AS scenePhotosName,
+			SCENE_PHOTOS_URL AS scenePhotosUrl,
+			SCENE_PHOTOS_PATH AS scenePhotosPath
+		from traffic_interview_scene_photos 
+		where SCENE_PHOTOS_ID=#scenePhotosId# AND IS_DEL='0'
+	</select>
+</sqlMap>

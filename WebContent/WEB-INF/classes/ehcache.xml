@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+	updateCheck="false">
+
+	<!-- <diskStore path="java.io.tmpdir" /> -->
+	<diskStore path="java.io.tmpdir/EhCacheSpringAnnotationsExampleApp" />
+	<defaultCache maxElementsInMemory="10000" eternal="true"
+		timeToIdleSeconds="1200" timeToLiveSeconds="1200" overflowToDisk="true"
+		diskPersistent="false" diskExpiryThreadIntervalSeconds="1200"
+		memoryStoreEvictionPolicy="LRU" />
+
+	<cache name="CodesignCache" maxElementsInMemory="10000" eternal="true"
+		timeToIdleSeconds="1200" timeToLiveSeconds="1200" overflowToDisk="true"
+		diskPersistent="false" diskExpiryThreadIntervalSeconds="1200"
+		memoryStoreEvictionPolicy="LRU" />
+
+	<cache name="portalCache" eternal="false" maxElementsInMemory="100"
+		overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU" />
+</ehcache>

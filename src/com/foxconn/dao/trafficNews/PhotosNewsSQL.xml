@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="PhotosNews">
+	<typeAlias alias="photosNews" type="com.foxconn.pojo.trafficNews.PhotosNews" />
+	<typeAlias alias="photosInfo" type="com.foxconn.pojo.trafficNews.PhotosInfo" />
+
+	<select id="getPhotosNewsList" resultClass="photosNews">
+		select
+		a.PHOTOS_NEWS_ID photosNewsID,a.PHOTOS_NEWS_TITLE photosNewsTitle,
+		a.SUB_PHOTOS_NEWS_TITLE subPhotosNewsTitle,a.Photos_News_Desc
+		photosNewsDesc,
+		b.PHOTO_ID mainPhotosID, b.PHOTO_NAME mainPhotosName,
+		b.PHOTO_URL mainPhotosUrl,b.PHOTO_DESC mainPhotosDesc
+		from
+		traffic_photos_news_t a
+		join traffic_photo_info_t b
+		on a.PHOTOS_NEWS_ID
+		= b.PHOTOS_NEWS_ID
+		and b.is_del='0'
+		and a.is_del='0'
+		AND a.PHOTOS_TYPE in(0, 2)
+		and
+		b.Is_Main_Photo='1'
+		AND a.PHOTOS_NEWS_STATUS = 7
+		order by a.ENTRY_DATE desc
+	</select>
+
+	<select id="getPhotosNewsListByPage" parameterClass="java.lang.Integer"
+		resultClass="photosNews">
+
+		SELECT * FROM
+		( SELECT P.*, ROWNUM RN
+		from(
+		select a.PHOTOS_NEWS_ID
+		photosNewsID,a.PHOTOS_NEWS_TITLE photosNewsTitle,
+		a.SUB_PHOTOS_NEWS_TITLE subPhotosNewsTitle,a.Photos_News_Desc
+		photosNewsDesc,
+		b.PHOTO_ID mainPhotosID, b.PHOTO_NAME mainPhotosName,
+		b.PHOTO_URL mainPhotosUrl,b.PHOTO_DESC mainPhotosDesc
+		from
+		traffic_photos_news_t a
+		join traffic_photo_info_t b
+		on a.PHOTOS_NEWS_ID
+		= b.PHOTOS_NEWS_ID
+		and b.is_del='0'
+		and b.Is_Main_Photo='1'
+		AND a.PHOTOS_TYPE in(0, 2)
+		and
+		a.is_del='0'
+		order by a.ENTRY_DATE desc
+		) P
+		WHERE <![CDATA[ ROWNUM <=#iNum#
+   	 ]]>
+		)
+		where RN >=#iNum#
+	</select>
+
+	<select id="getPhotosInfoListByPage" parameterClass="photosInfo"
+		resultClass="photosInfo">
+
+		select * from
+		(
+		select P.*, ROWNUM RN from
+		(
+		select a.PHOTO_ID
+		photosID,a.PHOTO_NAME photosName,
+		a.PHOTO_URL photosUrl,a.PHOTO_DESC
+		photosDesc,
+		a.PHOTO_ORDER photosOrder,a.IS_MAIN_PHOTO isMainPhotos,
+		a.PHOTOS_NEWS_ID photosNewsID
+		from traffic_photo_info_t a
+		where
+		a.PHOTOS_NEWS_ID = #photosNewsID#
+		and a.is_del='0'
+		order by
+		a.PHOTO_NAME asc ) P
+		WHERE <![CDATA[ ROWNUM <=#iENum#
+   	 ]]>
+		)
+		where RN >=#iSNum#
+	</select>
+
+	<select id="getPhotosInfoList" parameterClass="photosInfo"
+		resultClass="photosInfo">
+		select a.PHOTO_ID photosID,a.PHOTO_NAME photosName,
+		a.PHOTO_URL photosUrl,a.PHOTO_DESC photosDesc,
+		a.PHOTO_ORDER
+		photosOrder,a.IS_MAIN_PHOTO isMainPhotos,
+		a.PHOTOS_NEWS_ID photosNewsID
+		from traffic_photo_info_t a
+		where a.PHOTOS_NEWS_ID = #photosNewsID#
+		and
+		a.is_del='0'
+		order by a.PHOTO_NAME
+	</select>
+
+	<select id="getPhotosInfoListCount" parameterClass="photosInfo"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		from
+		traffic_photo_info_t
+		where PHOTOS_NEWS_ID
+		= #photosNewsID#
+		and
+		is_del = '0'
+	</select>
+
+	<select id="getPhotosInfoDetail" parameterClass="photosInfo"
+		resultClass="photosInfo">
+		select a.PHOTO_ID photosID,a.PHOTO_NAME photosName,
+		a.PHOTO_URL photosUrl,a.PHOTO_DESC photosDesc,
+		a.PHOTO_ORDER
+		photosOrder,a.IS_MAIN_PHOTO isMainPhotos,
+		a.PHOTOS_NEWS_ID
+		photosNewsID,b.PHOTOS_NEWS_TITLE photosNewsName
+		from
+		traffic_photo_info_t a
+		join traffic_photos_news_t b
+		on a.PHOTOS_NEWS_ID
+		= b.PHOTOS_NEWS_ID
+		and a.is_del='0'
+		and b.is_del='0'
+		where
+		a.PHOTO_ID=#photosID#
+	</select>
+
+	<!-- added by Cube @130828 -->
+	<select id="getPhotoNewsByID" parameterClass="photosNews"
+		resultClass="photosNews">
+		SELECT a.PHOTOS_NEWS_ID photosNewsID,
+		a.PHOTOS_NEWS_TITLE
+		photosNewsTitle,
+		to_char(a.ENTRY_DATE,'yyyy-mm-dd HH24:mi') ENTRY_DATE,
+		a.SUB_PHOTOS_NEWS_TITLE subPhotosNewsTitle,
+		B.INFO_NAME AS
+		photosNewsSource,
+		a.PHOTOS_NEWS_DESC photosNewsDesc
+		FROM
+		TRAFFIC_PHOTOS_NEWS_T a
+		JOIN
+		TRAFFIC_BASE_INFO_T b
+		ON
+		A.PHOTOS_NEWS_SOURCE = B.INFO_ID
+		WHERE PHOTOS_NEWS_ID = #photosNewsID#
+	</select>
+
+	<select id="getLatestPhotoNews" resultClass="photosNews">
+	     <![CDATA[ 
+SELECT *
+  FROM (  SELECT a.PHOTOS_NEWS_ID photosNewsID,
+                 a.PHOTOS_NEWS_TITLE photosNewsTitle,
+                 a.SUB_PHOTOS_NEWS_TITLE subPhotosNewsTitle,
+                 a.Photos_News_Desc photosNewsDesc,
+                 TO_CHAR (a.ENTRY_DATE, 'yyyy-mm-dd') ENTRY_DATE,
+                 b.PHOTO_ID mainPhotosID,
+                 b.PHOTO_NAME mainPhotosName,
+                 b.PHOTO_URL mainPhotosUrl,
+                 b.PHOTO_DESC mainPhotosDesc
+            FROM    traffic_photos_news_t a
+                 JOIN
+                    traffic_photo_info_t b
+                 ON     a.PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+                    AND b.is_del = '0'
+                    AND a.is_del = '0'
+                    AND b.Is_Main_Photo = '1'
+                    AND a.IS_TEXT_NEWS = 0
+                    AND a.PHOTOS_NEWS_STATUS = 7
+                    AND a.PHOTOS_TYPE in(0, 2)
+        ORDER BY a.ENTRY_DATE DESC) t
+ WHERE ROWNUM <= 4
+		]]>
+	</select>
+
+	<select id="getRecommendPhotoNews" resultClass="photosNews">
+	     <![CDATA[ 
+SELECT *
+  FROM (  SELECT a.PHOTOS_NEWS_ID photosNewsID,
+                 a.PHOTOS_NEWS_TITLE photosNewsTitle,
+                 a.SUB_PHOTOS_NEWS_TITLE subPhotosNewsTitle,
+                 a.Photos_News_Desc photosNewsDesc,
+                 TO_CHAR (a.ENTRY_DATE, 'yyyy-mm-dd') ENTRY_DATE,
+                 b.PHOTO_ID mainPhotosID,
+                 b.PHOTO_NAME mainPhotosName,
+                 b.PHOTO_URL mainPhotosUrl,
+                 b.PHOTO_DESC mainPhotosDesc
+            FROM    traffic_photos_news_t a
+                 JOIN
+                    traffic_photo_info_t b
+                 ON     a.PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+                    AND b.is_del = '0'
+                    AND a.is_del = '0'
+                    AND b.Is_Main_Photo = '1'
+                    AND a.is_text_news = 0
+                    AND a.PHOTOS_NEWS_STATUS = 7
+                    AND a.PHOTOS_TYPE in(0, 2)
+        ORDER BY a.READ_COUNT, a.ENTRY_DATE DESC) t
+ WHERE ROWNUM <= 3
+		]]>
+	</select>
+
+
+	<select id="getCollectionPhotoNews" resultClass="photosNews">
+	     <![CDATA[ 
+SELECT *
+  FROM (  SELECT a.PHOTOS_NEWS_ID photosNewsID,
+                 a.PHOTOS_NEWS_TITLE photosNewsTitle,
+                 a.SUB_PHOTOS_NEWS_TITLE subPhotosNewsTitle,
+                 a.Photos_News_Desc photosNewsDesc,
+                 TO_CHAR (a.ENTRY_DATE, 'yyyy-mm-dd') ENTRY_DATE,
+                 b.PHOTO_ID mainPhotosID,
+                 b.PHOTO_NAME mainPhotosName,
+                 b.PHOTO_URL mainPhotosUrl,
+                 b.PHOTO_DESC mainPhotosDesc
+            FROM    traffic_photos_news_t a
+                 JOIN
+                    traffic_photo_info_t b
+                 ON     a.PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+                    AND b.is_del = '0'
+                    AND a.is_del = '0'
+                    AND b.Is_Main_Photo = '1'
+                    AND A.is_text_news = 0
+                    AND a.PHOTOS_NEWS_STATUS = 7
+                    AND a.PHOTOS_TYPE in(0, 2)
+        ORDER BY a.ENTRY_DATE DESC) t
+ WHERE ROWNUM <= 7
+		]]>
+	</select>
+	
+	<update id="updateReadCount" parameterClass="photosNews">
+	    <![CDATA[
+UPDATE traffic_photos_news_t
+   SET READ_COUNT = READ_COUNT + 1
+ WHERE PHOTOS_NEWS_ID = #photosNewsID#	    
+	    ]]>
+	</update>
+	
+	<select id="queryPhotosNewsCount" resultClass="Integer">
+			SELECT count(1)
+			FROM    traffic_photos_news_t a
+            JOIN traffic_photo_info_t b ON  a.PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+            WHERE
+                   b.is_del = '0'
+                   AND a.is_del = '0'
+                   AND b.Is_Main_Photo = '1'
+                   AND A.is_text_news = 0
+                   AND a.PHOTOS_NEWS_STATUS = 7
+                   AND a.PHOTOS_TYPE in(0, 2)
+       		ORDER BY a.ENTRY_DATE DESC
+	</select>
+	
+		<select id="queryPhotoNewsList"  parameterClass="Map"  resultClass="photosNews">
+	    <![CDATA[ 
+			SELECT * FROM (
+  				SELECT t.*,ROWNUM ROWN FROM (  
+    				SELECT a.PHOTOS_NEWS_ID photosNewsID,
+      					a.PHOTOS_NEWS_TITLE photosNewsTitle,
+      					a.SUB_PHOTOS_NEWS_TITLE subPhotosNewsTitle,
+      					a.Photos_News_Desc photosNewsDesc,
+      					TO_CHAR (a.ENTRY_DATE, 'yyyy-mm-dd') ENTRY_DATE,
+      					b.PHOTO_ID mainPhotosID,
+      					b.PHOTO_NAME mainPhotosName,
+      					b.PHOTO_URL mainPhotosUrl,
+      					b.PHOTO_DESC mainPhotosDesc
+    				FROM traffic_photos_news_t a
+   					JOIN traffic_photo_info_t b ON  a.PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+    				WHERE b.is_del = '0'
+      					AND a.is_del = '0'
+      					AND b.Is_Main_Photo = '1'
+      					AND A.is_text_news = 0
+      					AND a.PHOTOS_NEWS_STATUS = 7
+      					AND a.PHOTOS_TYPE in(0, 2)
+    				ORDER BY a.ENTRY_DATE DESC
+  				) t
+			) tt 
+			where ROWN>#limitBegin# and ROWN<=#limitEnd#
+		]]>
+	</select>
+</sqlMap>

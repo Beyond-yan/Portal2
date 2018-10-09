@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="VideoNews">
+	<typeAlias alias="videoNews" type="com.foxconn.pojo.trafficNews.VideoNews" />
+
+	<!-- 获取重庆交通新闻列表 -->
+	<select id="getVideoNewsList" resultClass="videoNews">
+		select
+		video_news_id as
+		videoNewsId,
+		video_news_name as videoNewsName,
+		modify_date as
+		modifyDate,
+		main_photos_name as mainPhotosName,
+		main_photos_url as
+		mainPhotosUrl
+		from
+		traffic_video_news_t
+		where
+		video_news_status = '7'
+		and
+		is_del = '0'
+		order by ENTRY_DATE desc
+	</select>
+
+	<!-- 获取3条最热视频新闻 -->
+	<select id="getHotVideoNewsList" resultClass="videoNews">
+		select
+		video_news_id as videoNewsId,
+		video_news_name as videoNewsName,
+		main_photos_url as mainPhotosUrl,
+		main_photos_name as mainPhotosName,
+		modify_date as modifyDate,
+		read_count as readCount
+		from
+		traffic_video_news_t
+		where video_news_status = '7'
+		and
+		is_del = '0'
+		order
+		by
+		read_count desc
+	</select>
+
+	<!-- 获取8条最新视频新闻 -->
+	<select id="getFreshVideoNewsList" resultClass="videoNews">
+		select
+		video_news_id as videoNewsId,
+		video_news_name as videoNewsName,
+		modify_date as modifyDate
+		from
+		traffic_video_news_t
+		where
+		video_news_status = '7'
+		and
+		is_del = '0'
+		order by
+		ENTRY_DATE desc
+	</select>
+
+	<!-- 根据id获取videoNewsName -->
+	<select id="getVideoNameByID" parameterClass="Map" resultClass="videoNews">
+		select
+		video_news_name as videoNewsName，
+		modify_date as modifyDate，
+		read_count as readCount
+		from
+		traffic_video_news_t
+		where
+		video_news_id
+		=#newsID#
+	</select>
+
+	<select id="getVideoByID" parameterClass="Map" resultClass="videoNews">
+		SELECT a.video_news_id AS videoNewsId,
+		a.video_news_name AS
+		videoNewsName,
+		a.modify_date AS modifyDate,
+		a.main_photos_name AS
+		mainPhotosName,
+		a.main_photos_url AS mainPhotosUrl,
+		a.VIDEO_URL AS
+		videoUrl,
+		to_char(a.ENTRY_DATE,'yyyy-mm-dd HH24:mi') AS entryDate,
+		b.INFO_NAME
+		AS videoNewsSource
+		FROM traffic_video_news_t a
+		JOIN
+		TRAFFIC_BASE_INFO_T b
+		ON A.VIDEO_NEWS_SOURCE = b.INFO_ID
+		AND
+		a.is_del = '0'
+		AND a.video_news_id = #videoNewsId#
+	</select>
+
+	<!-- 更新视频新闻阅读人数 -->
+	<update id="updateVideoReadcount" parameterClass="Map">
+		update
+		traffic_video_news_t
+		set
+		read_count = #readCount#
+		where
+		video_news_id=#newsID#
+	</update>
+
+	<select id="getLatestVideoNews" resultClass="videoNews">
+	    <![CDATA[
+SELECT *
+  FROM (  SELECT VIDEO_NEWS_ID videoNewsId,
+                 VIDEO_NEWS_NAME videoNewsName,
+                 TO_CHAR (ENTRY_DATE, 'yyyy-mm-dd') entryDate,
+                 MAIN_PHOTOS_URL mainPhotosUrl
+            FROM TRAFFIC_VIDEO_NEWS_T
+           WHERE is_del = '0' AND VIDEO_NEWS_STATUS = 7
+        ORDER BY ENTRY_DATE DESC)
+ WHERE ROWNUM <= 4	    
+	    ]]>
+	</select>
+
+	<select id="getRecommendVideoNews" resultClass="videoNews">
+	    <![CDATA[
+SELECT *
+  FROM (  SELECT VIDEO_NEWS_ID videoNewsId,
+                 VIDEO_NEWS_NAME videoNewsName,
+                 TO_CHAR (ENTRY_DATE, 'yyyy-mm-dd') entryDate,
+                 MAIN_PHOTOS_URL mainPhotosUrl
+            FROM TRAFFIC_VIDEO_NEWS_T
+           WHERE is_del = '0' AND VIDEO_NEWS_STATUS = 7
+        ORDER BY READ_COUNT, ENTRY_DATE DESC)
+ WHERE ROWNUM <= 3	    
+	    ]]>
+	</select>
+
+	<select id="getCollectionVideoNews" resultClass="videoNews">
+	    <![CDATA[
+SELECT *
+  FROM (  SELECT VIDEO_NEWS_ID videoNewsId,
+                 VIDEO_NEWS_NAME videoNewsName,
+                 TO_CHAR (ENTRY_DATE, 'yyyy-mm-dd') entryDate,
+                 MAIN_PHOTOS_URL mainPhotosUrl
+            FROM TRAFFIC_VIDEO_NEWS_T
+           WHERE is_del = '0' AND VIDEO_NEWS_STATUS = 7
+        ORDER BY ENTRY_DATE DESC)
+ WHERE ROWNUM <= 7
+	    ]]>
+	</select>
+	
+	<!--H2602975  20140923-->
+	<select id="getAllVideoNews" resultClass="videoNews">
+	    <![CDATA[
+SELECT *
+  FROM (  SELECT VIDEO_NEWS_ID videoNewsId,
+                 VIDEO_NEWS_NAME videoNewsName,
+                 TO_CHAR (ENTRY_DATE, 'yyyy-mm-dd') entryDate,
+                 MAIN_PHOTOS_URL mainPhotosUrl
+            FROM TRAFFIC_VIDEO_NEWS_T
+           WHERE is_del = '0' AND VIDEO_NEWS_STATUS = 7
+        ORDER BY ENTRY_DATE DESC)
+	    ]]>
+	</select>
+	
+		<select id="getVideoNewsTotalCount" resultClass="Integer" >
+	    <![CDATA[
+SELECT count(*)
+  FROM (  SELECT VIDEO_NEWS_ID videoNewsId,
+                 VIDEO_NEWS_NAME videoNewsName,
+                 TO_CHAR (ENTRY_DATE, 'yyyy-mm-dd') entryDate,
+                 MAIN_PHOTOS_URL mainPhotosUrl
+            FROM TRAFFIC_VIDEO_NEWS_T
+           WHERE is_del = '0' AND VIDEO_NEWS_STATUS = 7
+        ORDER BY ENTRY_DATE DESC)
+	    ]]>
+	</select>
+</sqlMap>

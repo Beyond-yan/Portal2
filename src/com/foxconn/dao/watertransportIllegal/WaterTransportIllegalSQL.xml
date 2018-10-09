@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="WaterTransportIllegalSQL">
+
+	<typeAlias alias="waterTransportIllegal" type="com.foxconn.pojo.watertransportIllegal.WaterTransportIllegal"/>
+	
+	<insert id="InsertWaterTransportIllegal" parameterClass="waterTransportIllegal" >
+		INSERT INTO TRAFFIC_HIGHWAY_WATER_ILLEGAL (
+			ID,
+			FILL_COMPANY,
+			BIANHAO,
+			ILLEGAL_COMPANY_NAME,
+			ILLEGAL_PERSONNEL_NAME,
+			ID_CARD_NO,
+			WHERE_COMPANY_NAME,
+			
+			SOCIOLOGY_CREDIT_CODE,
+			PROJECT_CONTRACT_SECTION,
+			PROJECT_CATEGORY,
+			PROJECT_INVESTMENT_TYPE,
+			PROJECT_BUILD_STATE,
+			ENGINEERING_GRADE,
+			ILLEGAL_BEHAVIOR_TYPE,
+			ILLEGAL_BEHAVIOR_LOCATION,
+			ILLEGAL_BEHAVIOR_FACT,
+			RESPONSIBILITY_HANDLE_RESULT,
+			COGNIZANCE_FILE,
+
+			COGNIZANCE_TIME,
+			NOTIFICATION_GRANT_TIME,
+			IS_MENTION_APPEAL,
+			APPLICANT,
+			CONTACT_PHONE,
+			FILL_TIME,
+			REPORT_FORM_TYPE,
+			CREATE_USER,
+			CREATE_TIME,
+			IS_DEL
+		) VALUES (
+			SYS_GUID(),
+			#FILL_COMPANY#,
+			#BIANHAO#,
+			#ILLEGAL_COMPANY_NAME#,
+			#ILLEGAL_PERSONNEL_NAME#,
+			#ID_CARD_NO#,
+			#WHERE_COMPANY_NAME#,
+			
+			#SOCIOLOGY_CREDIT_CODE#,
+			#PROJECT_CONTRACT_SECTION#,
+			#PROJECT_CATEGORY#,
+			#PROJECT_INVESTMENT_TYPE#,
+			#PROJECT_BUILD_STATE#,
+			#ENGINEERING_GRADE#,
+			#ILLEGAL_BEHAVIOR_TYPE#,
+			#ILLEGAL_BEHAVIOR_LOCATION#,
+			#ILLEGAL_BEHAVIOR_FACT#,
+			#RESPONSIBILITY_HANDLE_RESULT#,
+
+			#COGNIZANCE_FILE#,
+			to_date(#COGNIZANCE_TIME#,'yyyy-mm-dd hh24:mi:ss'),
+			to_date(#NOTIFICATION_GRANT_TIME#,'yyyy-mm-dd hh24:mi:ss'),
+			#IS_MENTION_APPEAL#,
+			#APPLICANT#,
+			#CONTACT_PHONE#,
+			to_date(#FILL_TIME#,'yyyy-mm-dd hh24:mi:ss'),
+			#REPORT_FORM_TYPE#,
+			#CREATE_USER#,
+			to_date(#CREATE_TIME#,'yyyy-mm-dd hh24:mi:ss'),
+			'0'
+		) 
+	</insert>
+	
+	<update id="UpdateWaterTransportIllegal" parameterClass="waterTransportIllegal" >
+		UPDATE TRAFFIC_HIGHWAY_WATER_ILLEGAL SET 
+			FILL_COMPANY=#FILL_COMPANY#,
+			BIANHAO=#BIANHAO#,
+			ILLEGAL_COMPANY_NAME=#ILLEGAL_COMPANY_NAME#,
+			ILLEGAL_PERSONNEL_NAME=#ILLEGAL_PERSONNEL_NAME#,
+			ID_CARD_NO=#ID_CARD_NO#,
+			WHERE_COMPANY_NAME=#WHERE_COMPANY_NAME#,
+			SOCIOLOGY_CREDIT_CODE=#SOCIOLOGY_CREDIT_CODE#,
+			PROJECT_CONTRACT_SECTION=#PROJECT_CONTRACT_SECTION#,
+			PROJECT_CATEGORY=#PROJECT_CATEGORY#,
+			PROJECT_INVESTMENT_TYPE=#PROJECT_INVESTMENT_TYPE#,
+			PROJECT_BUILD_STATE=#PROJECT_BUILD_STATE#,
+			ENGINEERING_GRADE=#ENGINEERING_GRADE#,
+			ILLEGAL_BEHAVIOR_TYPE=#ILLEGAL_BEHAVIOR_TYPE#,
+			ILLEGAL_BEHAVIOR_LOCATION=#ILLEGAL_BEHAVIOR_LOCATION#,
+			ILLEGAL_BEHAVIOR_FACT=#ILLEGAL_BEHAVIOR_FACT#,
+			RESPONSIBILITY_HANDLE_RESULT=#RESPONSIBILITY_HANDLE_RESULT#,
+			COGNIZANCE_FILE=#COGNIZANCE_FILE#,
+			COGNIZANCE_TIME=to_date(#COGNIZANCE_TIME#,'yyyy-mm-dd hh24:mi:ss'),
+			NOTIFICATION_GRANT_TIME=to_date(#NOTIFICATION_GRANT_TIME#,'yyyy-mm-dd hh24:mi:ss'),
+			IS_MENTION_APPEAL=#IS_MENTION_APPEAL#,
+			APPLICANT=#APPLICANT#,
+			CONTACT_PHONE=#CONTACT_PHONE#,
+			FILL_TIME=to_date(#FILL_TIME#,'yyyy-mm-dd hh24:mi:ss'),
+			REPORT_FORM_TYPE=#REPORT_FORM_TYPE#,
+			CREATE_USER=#CREATE_USER#,
+			CREATE_TIME=to_date(#CREATE_TIME#,'yyyy-mm-dd hh24:mi:ss')
+		WHERE ID=#ID#
+	</update>
+	
+	<update id="DeleteWaterTransportIllegal" parameterClass="waterTransportIllegal" >
+		UPDATE TRAFFIC_HIGHWAY_WATER_ILLEGAL SET 
+			IS_DEL=#IS_DEL#
+		WHERE ID=#ID#
+	</update>
+	
+	<select id="SelectWaterTransportIllegal" parameterClass="java.util.Map" resultClass="waterTransportIllegal">
+		SELECT 
+			ID,
+			FILL_COMPANY,
+			BIANHAO,
+			ILLEGAL_COMPANY_NAME,
+			ILLEGAL_PERSONNEL_NAME,
+			ID_CARD_NO,
+			WHERE_COMPANY_NAME,
+			SOCIOLOGY_CREDIT_CODE,
+			PROJECT_CONTRACT_SECTION,
+			PROJECT_CATEGORY,
+			PROJECT_INVESTMENT_TYPE,
+			PROJECT_BUILD_STATE,
+			ENGINEERING_GRADE,
+			ILLEGAL_BEHAVIOR_TYPE,
+			ILLEGAL_BEHAVIOR_LOCATION,
+			ILLEGAL_BEHAVIOR_FACT,
+			RESPONSIBILITY_HANDLE_RESULT,
+			COGNIZANCE_FILE,
+			to_char(COGNIZANCE_TIME, 'yyyy-MM-dd hh24:mi:ss') as COGNIZANCE_TIME,
+			to_char(NOTIFICATION_GRANT_TIME, 'yyyy-MM-dd hh24:mi:ss') as NOTIFICATION_GRANT_TIME,
+			IS_MENTION_APPEAL,
+			APPLICANT,
+			CONTACT_PHONE,
+			to_char(FILL_TIME, 'yyyy-MM-dd hh24:mi:ss') as FILL_TIME,
+			REPORT_FORM_TYPE,
+			CREATE_USER,
+			to_char(CREATE_TIME, 'yyyy/MM/dd') as CREATE_TIME,
+			IS_DEL
+		FROM TRAFFIC_HIGHWAY_WATER_ILLEGAL WHERE IS_DEL='0'
+		
+  		<dynamic>
+			<isNotEmpty  prepend="and" property="ILLEGAL_COMPANY_NAME">
+				 ( ILLEGAL_COMPANY_NAME like '%'||#ILLEGAL_COMPANY_NAME#||'%' 
+				 	OR ILLEGAL_PERSONNEL_NAME like '%'||#ILLEGAL_COMPANY_NAME#||'%')
+	    	</isNotEmpty>
+	    	
+	    	<isNotEmpty  prepend="and" property="SOCIOLOGY_CREDIT_CODE">
+				 SOCIOLOGY_CREDIT_CODE like '%'||#SOCIOLOGY_CREDIT_CODE#||'%'
+	    	</isNotEmpty>
+	    	
+	    	<isNotEmpty  prepend="and" property="startTime">
+				<![CDATA[ CREATE_TIME >= TO_DATE (#startTime#, 'yyyy-mm-dd') ]]>
+	    	</isNotEmpty>
+	    	
+	    	<isNotEmpty  prepend="and" property="endTime">
+				<![CDATA[ CREATE_TIME <= TO_DATE (#endTime#, 'yyyy-mm-dd') ]]>
+	    	</isNotEmpty>
+	    	<isNotEmpty  prepend="and" property="ID">
+				ID = #ID#
+	    	</isNotEmpty>
+		</dynamic> 
+		
+	</select>
+
+</sqlMap>

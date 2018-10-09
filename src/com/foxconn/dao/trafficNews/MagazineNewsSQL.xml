@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="MagazineNewsSQL">
+	<typeAlias alias="magazineNews" type="com.foxconn.pojo.trafficNews.MagazineNews" />
+	<typeAlias alias="selectBean" type="com.foxconn.pojo.util.SelectBean" />
+	<typeAlias alias="yearbook" type="com.foxconn.pojo.trafficNews.Yearbook" />
+	<select id="getMagazineNewsByID" resultClass="magazineNews"
+		parameterClass="java.lang.String">
+		SELECT B.PROGRAM_ID catalogID,
+		B.PROGRAM_NAME catalogName,
+		C.CONTENT_ID
+		contentID,
+		C.CONTENT_TITLE contentTitle,
+		C.MAGAZINE_CONTENT
+		magazineContent,
+		c.writer
+		FROM TRAFFIC_MAGAZINE_PROGRAM_T b,
+		TRAFFIC_MAGAZINE_CONTENT_T c
+		WHERE B.MAGAZINE_NUMBER = #magazineNum#
+		AND B.PROGRAM_ID = C.PROGRAM_ID
+		AND B.IS_DEL = 0
+		AND C.IS_DEL = 0
+		ORDER
+		BY B.PROGRAM_ORDER, C.CONTENT_ORDER
+	</select>
+	<select id="getMagazineInfo" resultClass="magazineNews"
+		parameterClass="java.lang.String">
+		SELECT *
+		FROM (SELECT A.MAGAZINE_TITLE magazineTitle,
+		A.MAGAZINE_NUMBER
+		magazineNum,
+		A.MAIN_PHOTOS_URL photoURL,
+		A.MAGAZINE_FILE_URL fileURL
+		FROM TRAFFIC_MAGAZINE_INFO_T a
+		WHERE A.IS_DEL = '0' AND A.MAGAZINE_STATUS = 7 AND
+		a.MAGAZINE_NUMBER = #magazineNum#)
+		WHERE ROWNUM = 1
+	</select>
+	<select id="getContent" resultClass="magazineNews"
+		parameterClass="java.lang.String">
+		SELECT content_title contentTitle,
+		replace(magazine_content,'"','\"')
+		magazineContent,
+		writer
+		FROM
+		TRAFFIC_MAGAZINE_CONTENT_T
+		WHERE content_id = #contentID#
+	</select>
+	<!-- rewrited by Cube @130913 -->
+	<select id="getMagazineNumList" resultClass="String">
+		SELECT TO_CHAR (MIN
+		(TO_DATE (MAGAZINE_NUMBER, 'yyyy/mm')), 'yyyy-mm-dd')
+		monthrange
+		FROM
+		TRAFFIC_MAGAZINE_INFO_T
+		WHERE IS_DEL = '0' AND MAGAZINE_STATUS = 7
+		UNION ALL
+		SELECT TO_CHAR (MAX (TO_DATE (MAGAZINE_NUMBER, 'yyyy/mm')),
+		'yyyy-mm-dd')
+		monthrange
+		FROM TRAFFIC_MAGAZINE_INFO_T
+		WHERE IS_DEL = '0'
+		AND MAGAZINE_STATUS = 7
+	</select>
+	<select id="getYearbookList" resultClass="yearbook">
+  SELECT YEAR_BOOKS_NAME, MAIN_PHOTOS_URL, YEAR_BOOKS_FURL
+    FROM TRAFFIC_YEAR_BOOKS_T
+   WHERE is_del = 0
+ORDER BY entry_date DESC
+	</select>
+	
+	<select id="getMagazineNumber" resultClass="java.lang.String">
+		select MAGAZINE_NUMBER from TRAFFIC_MAGAZINE_INFO_T where MAGAZINE_ID=#magazineId#
+	</select>
+</sqlMap>

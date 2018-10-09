@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration>
+	<!-- 设置CONSOLE监视器输出方式 -->
+	<appender name="CoDesignCONSOLEAppender" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<!--滤镜设置输出的级别 -->
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="levelMin" value="error" />
+			<param name="levelMax" value="fatal" />
+			<param name="AcceptOnMatch" value="true" />
+		</filter>
+	</appender>
+	<!-- 设置通道CoDesign INFO Appender和输出方式：org.apache.log4j.RollingFileAppender -->
+	<appender name="CoDesignINFOAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="error" />
+		<!-- 设置File参数：日志输出文件名 -->
+		<param name="File" value="${catalina.home}/logs/Portal.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />
+		<!-- 设置是否在重新启动服务时，true值代表在原有日志的基础添加新日志 -->
+		<param name="Append" value="true" />
+<!-- 		<param name="MaxFileSize" value="500KB" />
+		<param name="MaxBackupIndex" value="2" /> -->
+		
+		<param name="BufferSize" value="8192" />  
+		<param name="ImmediateFlush" value="false" />  
+    	<param name="BufferedIO" value="true" />  
+		
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- 设置输出文件项目和格式 -->
+			<param name="ConversionPattern" value="%d{yyyy/MM/dd HH:mm:ss} [%p] [%c] %m%n" />
+		</layout>
+	</appender>
+
+<!-- 	<appender name="debug" class="net.sf.ehcache">
+		<param name="Threshold" value="debug" />
+	</appender> -->
+	
+	<!--  category 部分定义了特定包或者类的输出级别和方式，可以有多个 -->
+	<category name="net.sf.ehcache">
+	   <priority value="error"/>
+	   <appender-ref ref="CoDesignCONSOLEAppender"/>
+	</category>
+	
+
+    <!--  打印日志到固定的文件中CoDesignINFOAppender选择自定义的日志级别设置 -->
+    <category name="com.googlecode.ehcache.annotations">
+	   <priority value="error"/>
+	   <appender-ref ref="CoDesignINFOAppender"/>
+	</category>
+    
+
+	
+	
+	<root>
+		<!-- 设置接收所有输出的通道 -->  
+		<!-- 
+		<level value="trace" />
+		<level value="debug" />
+		 	<level value="info" />
+		  	<level value="warn" />
+		  	<level value="error" />
+			<level value="fatal" /> 
+		-->
+		
+		<!-- 与前面的通道id相对应 -->  
+		<appender-ref ref="CoDesignCONSOLEAppender" />
+		<appender-ref ref="CoDesignINFOAppender" />
+	</root>
+</log4j:configuration>

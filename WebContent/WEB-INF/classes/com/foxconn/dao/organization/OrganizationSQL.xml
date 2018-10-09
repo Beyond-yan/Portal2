@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Organization">
+	<typeAlias alias="textNews" type="com.foxconn.pojo.trafficNews.TextNews" />
+	<select id="getOrgList" parameterClass="textNews" resultClass="textNews">
+  SELECT t.news_id newsId, t.news_title newsTitle, t.program_type programType
+    FROM TRAFFIC_TEXT_NEWS_INFO_T t
+   WHERE     t.program_type = #programType#
+         AND T.NEWS_STATUS = 7
+         AND T.IS_DEL = '0'
+     ORDER BY t.program_type, t.entry_date DESC
+	</select>
+</sqlMap>

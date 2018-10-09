@@ -1,0 +1,495 @@
+@charset "utf-8";
+/* CSS Document */
+body{
+    margin:0;
+    padding:0;
+    min-width:1300px;
+    font-family:"微软雅黑";
+}
+*{
+    box-sizing: border-box;
+}
+i,em{
+    font-style:normal;
+}
+html,body{
+    height: 100%;
+    background-image:url("../images/trafficconference/bg.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.head{
+    width:100%;
+    height: 188px;
+    position: relative;
+}
+.head img{
+    width:100%;
+    height: 188px;
+    position: absolute;
+    z-index:1
+}
+.title{
+    width:100%;
+    height:45px;
+    position: absolute;
+    bottom: 0px;
+    z-index:999}
+.t_cont{
+    width:1000px;
+    height: 100%;
+    margin:0 auto;
+}
+.t_cont a{
+    text-decoration:none;
+    line-height:45px;
+    color:#fff;
+    font-size:14px;
+    font-family:"微软雅黑";
+    float:left;
+}
+.t_cont a :hover{
+    color:#FCC;
+}
+.t_cont ul{
+    margin:0;
+    padding: 0px;
+    list-style:none;
+}
+.t_cont ul li{
+    margin-right: 52px;
+    display: inline-block;
+    height: 100%;
+    float:left;
+    color:#fff;
+    text-align:left;
+}
+.t_cont ul  a{
+    line-height:45px;
+    font-size:18px;
+    color:#fff;
+    font-family:"微软雅黑";
+
+}
+.conall{
+    width:100%;
+    height: 1000px;
+    background-image:url("../images/trafficconference/bg.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.all-content{
+    width:1000px;
+    height:790px;
+    margin:16px auto;
+}
+.all-content .news-content {
+    width: 100%;
+    height: 526px;
+}
+.news-content .panel1{
+    height:100%;
+    width: 405px;
+    background-color: #EAF1F6;;
+    float: left;
+    padding:16px 16px 25px 16px;
+}
+.news-content .panel1 .picandnews{
+    height: 100%;
+    width: 100%;
+}
+#banner { position: relative; width: 100%; height: 270px; overflow: hidden; }
+#banner_list{
+    height: 230px;width: 100%
+}
+#banner_list img { border: 0px;  height: 100%;width: 100%}
+#banner_bg { position: absolute; bottom: 0;background-color:#CECECE;height: 40px; z-index: 1000; cursor: pointer; width:100%; }
+#banner_info { position: absolute; bottom: 0; left: 5px; height: 22px; color: #fff; z-index: 1001; cursor: pointer }
+#banner_text { position: absolute; width: 120px; z-index: 1002; right: 3px; bottom: 3px; }
+#banner ul { position: absolute; list-style-type: none; filter: Alpha(Opacity=80); opacity: 0.8; z-index: 1002; margin: 0; padding: 0; bottom: 7px; right: 5px; }
+#banner ul li { margin-left:10px;padding: 0px 8px; float: left; display: block; color: #FFF; background: #AEAEAE; cursor: pointer; }
+#banner ul li.on { background-color: #0071B1; }
+#banner_list a { position: absolute; height: 100%;width: 100%}
+#banner_list a img{
+    height:270px;width: 100%
+}
+.panel1 .picandnews .news-detail{
+    height: 230px;
+    width: 100%;
+    padding-top: 15px;
+    padding-top: 15px;
+    background-color: #EAF1F6;
+}
+
+.news-detail .news-detail-title{
+    color:#333333;
+    font-family: "Microsoft YaHei";
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: bold;
+}
+.news-detail .news-detail-content{
+    color:rgb(102,102,102);
+    font-family: "Microsoft YaHei";
+    font-size: 15px;
+    position: relative;
+    text-indent:2em;
+    padding: 0 10px 20px 10px;
+    letter-spacing: 1px;
+}
+.news-detail .news-detail-content span{
+    position: absolute;
+    right: 10px;
+}
+.clearfix:after {
+    content: "\0020";
+    display: block;
+    height: 0;
+    clear: both;
+}
+.news-content .panel2{
+    height:100%;
+    width: 300px;
+    margin-left: 16px;
+    float: left;
+}
+.news-content .panel4{
+    height:255px;
+    width:100%;
+    background-color: white;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+.news-content .panel4 .guozhuo_title{
+    height:40px;
+    width:100%;
+    font-size: 16px;
+    padding-left: 14px;
+    box-sizing: border-box;
+    line-height: 40px;
+    font-family: "Microsoft YaHei";
+    color:white;
+    background-image: url("../images/trafficconference/gqtitle.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.news-content .panel4 .guozhuo_title span{
+    display: block;
+    height: 40px;
+    float: right;
+    font-family: "Microsoft YaHei";
+    color:rgb(103,175,223);
+    padding-right: 16px;
+}
+.news-content .panel4 .guozhuo_content {
+    height:210px;
+    padding: 20px 16px;
+    overflow: hidden;
+}
+.guozhuo_content ul{
+    padding: 0;
+    margin: 0;
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    list-style: none;
+}
+.guozhuo_content li {
+    color:rgb(51,51,51);
+    font-family: "Microsoft YaHei";
+    font-size:14px;
+    height: 30px;
+    position: relative;
+    padding-left: 10px;
+}
+.guozhuo_content li a{
+    text-decoration: none;
+    color:rgb(51,51,51);
+    display: block;
+    width: 100%;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    word-break:keep-all;
+    overflow:hidden
+}
+
+.guozhuo_content li:before{
+    content: '\2002';
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    top: 8px;
+    left: 0px;
+    border-radius: 3px;
+    font-size: 16px;
+    display: inline-block;
+    background-color: #AFD9F8;
+}
+.news-content .panel5{
+    height:255px;
+    width:100%;
+    background-color: white;
+    overflow: hidden;
+}
+.news-content .panel5 .meiti_title{
+    height:40px;
+    width:100%;
+    font-size: 16px;
+    padding-left: 14px;
+    box-sizing: border-box;
+    line-height: 40px;
+    font-family: "Microsoft YaHei";
+    color:white;
+    background-image: url("../images/trafficconference/gqtitle.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.news-content span  a{
+    text-decoration: none;
+    font-family: "Microsoft YaHei";
+    color:rgb(103,175,223);
+}
+.news-content .panel5 .meiti_title span{
+    display: block;
+    height: 40px;
+    float: right;
+    font-family: "Microsoft YaHei";
+    color:rgb(103,175,223);
+    padding-right: 16px;
+}
+.news-content .panel5 .meiti_content {
+    height:210px;
+    padding: 20px 16px;
+    overflow: hidden;
+}
+.meiti_content ul{
+    padding: 0;
+    margin: 0;
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    list-style: none;
+}
+.meiti_content li {
+    color:rgb(51,51,51);
+    font-family: "Microsoft YaHei";
+    font-size:14px;
+    height: 30px;
+    position: relative;
+    padding-left: 10px;
+}
+.meiti_content li a{
+    text-decoration: none;
+    color:rgb(51,51,51);
+    display: block;
+    width: 100%;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    word-break:keep-all;
+    overflow:hidden
+}
+
+.meiti_content li:before{
+    content: '\2002';
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    top: 8px;
+    left: 0px;
+    border-radius: 3px;
+    font-size: 16px;
+    display: inline-block;
+    background-color: #AFD9F8;
+}
+.news-content .panel3{
+    height:100%;
+    width: 262px;
+    float: right;
+    background-color: white;
+    overflow: hidden;
+}
+.news-content .panel3 .guanqie_title{
+    height:40px;
+    width:100%;
+    font-size: 16px;
+    padding-left: 14px;
+    box-sizing: border-box;
+    line-height: 40px;
+    font-family: "Microsoft YaHei";
+    color:white;
+    background-image: url("../images/trafficconference/gqtitle.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.news-content .panel3 .guanqie_title span{
+     display: block;
+     height: 40px;
+     float: right;
+     font-family: "Microsoft YaHei";
+     color:rgb(103,175,223);
+     padding-right: 16px;
+ }
+.news-content .panel3 .guanqie_content {
+    height:486px;
+    padding: 20px 16px;
+    overflow: hidden;
+}
+.guanqie_content ul{
+    padding: 0;
+    margin: 0;
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    list-style: none;
+}
+.guanqie_content li {
+    color:rgb(51,51,51);
+    font-family: "Microsoft YaHei";
+    font-size:14px;
+    height: 30px;
+    position: relative;
+    padding-left: 10px;
+}
+.guanqie_content li a{
+    text-decoration: none;
+    color:rgb(51,51,51);
+    display: block;
+    width: 100%;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    word-break:keep-all;
+    overflow:hidden
+}
+
+.guanqie_content li:before{
+    content: '\2002';
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    top: 8px;
+    left: 0px;
+    border-radius: 3px;
+    font-size: 16px;
+    display: inline-block;
+    background-color: #AFD9F8;
+}
+
+.all-content .pics-content {
+    margin-top: 16px;
+    width: 100%;
+    height: 240px;
+    background-color: white;
+}
+.pics-content .xiangguan_title{
+    height:40px;
+    width:100%;
+    font-size: 16px;
+    padding-left: 14px;
+    box-sizing: border-box;
+    line-height: 40px;
+    font-family: "Microsoft YaHei";
+    color:white;
+    background-image: url("../images/trafficconference/xiangguan.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.pics-content .xiangguan_title span{
+    display: block;
+    height: 40px;
+    float: right;
+    font-family: "Microsoft YaHei";
+    color:rgb(103,175,223);
+    padding-right: 16px;
+}
+.pics-content .xiangguan_content {
+    width: 100%;
+    height: 200px;
+    padding: 40px 40px 40px 60px;
+    position: relative;
+    overflow: hidden;
+}
+.pics-content .xiangguan_content .imgages{
+list-style: none;
+    padding: 0px;
+    margin: 0;
+    width: 10000px;
+    position: absolute;
+}
+.pics-content span a {
+    font-family: "Microsoft YaHei";
+    color:rgb(103,175,223);
+    text-decoration: none;
+}
+.pics-content .xiangguan_content li{
+    float: left;
+    height: 120px;
+    width: 160px;
+    margin-right: 20px;
+}
+.xiangguan_content .imgscontainer{
+    width: 900px;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.pics-content .xiangguan_content li img{
+    height: 100%;
+    width: 100%;
+}
+.carousel-control.b_left{
+    position: absolute;
+    width: 40px;
+    height: 60px;
+    display: block;
+    top: 50%;
+    left: 0;
+    background-image: url("../images/trafficconference/myleft.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    margin-top: -30px;
+}
+.carousel-control.b_right{
+    position: absolute;
+    width: 40px;
+    height: 60px;
+    display: block;
+    top: 50%;
+    background-image: url("../images/trafficconference/myright.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    right: 0;
+    margin-top: -30px;
+}
+.footer{
+    width: 100%;
+    height: 200px;
+    border-top: 2px solid #0074B5;
+    margin-top: 10px;
+    padding-top: 20px;
+}
+.footer .footer_info1{
+    width: 250px;
+    margin: 0 auto;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+    height:30px;
+    line-height: 30px;
+}
+.footer .footer_info1 span {
+    width: 100px;
+    height: 30px;
+    line-height: 30px;font-size: 18px;
+    display: inline-block;
+}
+.footer .footer_info2{
+    width: 600px;
+    text-align: center;
+    margin: 0 auto;
+}
+

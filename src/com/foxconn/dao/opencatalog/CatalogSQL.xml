@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Catalog">
+	<typeAlias alias="Catalog" type="com.foxconn.pojo.opencatalog.Catalog" />
+	<select id="getCatalog" parameterClass="java.util.Map"
+		resultClass="Catalog">
+		SELECT a.RESOURCE_ID AS id,
+		a.PARENT_ID AS pId,
+		a.RESOURCE_NAME AS name,
+		a.RESOURCE_URL AS url,
+		a.PAGE_TARGET AS target,
+		'true' AS open
+		FROM
+		TRAFFIC_RESOURCE a
+		where
+		a.resource_order >0 and 
+		a.IS_DEL = '0'
+		ORDER BY
+		a.resource_order
+	</select>
+	<select id="getCatalogList" parameterClass="Catalog"
+		resultClass="Catalog">
+		select c.news_id newsID,
+		a.News_Title newsTitle,
+		to_char(a.entry_date, 'yyyy/MM/dd') entryDate,
+		a.entry_user entryuser,
+		a.News_Status newsStatusID,
+		b.info_name newsStatusName,
+		a.APPROVALER
+		approvaler,
+		c.PAGE_ID programType,
+		c.IS_FIRST isFirst
+		from
+		TRAFFIC_PAGE_NEWS_REF_T c
+		join Traffic_Text_News_Info_T a on c.news_id
+		= a.NEWS_ID and c.is_del =
+		'0'
+		join Traffic_Base_Info_T b on
+		a.News_Status = b.Info_ID and b.is_del = '0'
+		and a.is_del = '0' and a.news_status = 7
+		where
+		a.News_Part_Tag = '1' and c.page_id =#id#
+		<![CDATA[and (a.PRESS_DATE<=sysdate or a.PRESS_DATE is null)]]>
+		order by A.STICK_STATE desc nulls last,A.ENTRY_DATE desc NULLS last
+	</select>
+	<select id="getLikeCatalogList" parameterClass="Catalog"
+			resultClass="Catalog">
+		select c.news_id newsID,
+		a.News_Title newsTitle,
+		to_char(a.entry_date, 'yyyy/MM/dd') entryDate,
+		a.entry_user entryuser,
+		a.News_Status newsStatusID,
+		b.info_name newsStatusName,
+		a.APPROVALER
+		approvaler,
+		c.PAGE_ID programType,
+		c.IS_FIRST isFirst
+		from
+		TRAFFIC_PAGE_NEWS_REF_T c
+		join Traffic_Text_News_Info_T a on c.news_id
+		= a.NEWS_ID and c.is_del =
+		'0'
+		join Traffic_Base_Info_T b on
+		a.News_Status = b.Info_ID and b.is_del = '0'
+		and a.is_del = '0' and a.news_status = 7
+		where
+		a.News_Part_Tag = '1' and c.page_id like '%'||#id#||'%'
+		<![CDATA[and (a.PRESS_DATE<=sysdate or a.PRESS_DATE is null)]]>
+		order by A.STICK_STATE desc nulls last,A.ENTRY_DATE desc NULLS last
+	</select>
+	<select id="getTextNewsDetail" parameterClass="Catalog"
+		resultClass="Catalog">
+		select a.news_id newsID,a.news_title newsTitle,a.SUB_NEWS_TITLE
+		subNewsTitle,
+		a.NEWS_CONTENT newsContent,
+		a.NEWS_SOURCE
+		newsSource,b.INFO_NAME newsSourceName,
+		a.READCOUNT readRecordCount,
+<!-- 		a.EFFECTIVECOUNT effectiveCount,a.EMOTIONALCOUNT emotionalCount, -->
+<!-- 		a.HAPPYCOUNT happyCount,a.NONSENSECOUNT nonsenseCount,a.BORINGCOUNT -->
+<!-- 		boringCount, -->
+<!-- 		a.FEARCOUNT fearCount,a.SADCOUNT sadCount,a.ANGRYCOUNT -->
+<!-- 		angryCount, -->
+		a.news_key_word newsKeyWord,
+		to_char(a.modify_date,'yyyy-mm-dd HH24:mi') modifyDate
+		from
+		Traffic_Text_News_Info_T a
+		left join Traffic_Base_Info_T b
+		on
+		a.NEWS_SOURCE=b.INFO_ID
+		and b.IS_DEL='0'
+		where 1=1
+		<dynamic>
+			<isNotEmpty prepend="and" property="newsID">
+				a.News_ID = #newsID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="gettopmenu" parameterClass="Catalog" resultClass="Catalog">
+		select t.resource_id as id, t.resource_name as name
+		from
+		TRAFFIC_RESOURCE t
+		where t.resource_id=#id#
+	</select>
+	<!-- added by Cube @130905 -->
+	<select id="getInitCatelogDetail" resultClass="Catalog">
+	<![CDATA[
+SELECT *
+  FROM (  SELECT a.RESOURCE_ID AS id,
+                 a.PARENT_ID AS pId,
+                 a.RESOURCE_NAME AS name,
+                 a.RESOURCE_URL AS url,
+                 a.PAGE_TARGET AS target,
+                 'true' AS open
+            FROM TRAFFIC_RESOURCE a
+           WHERE     a.resource_order IS NOT NULL
+                 AND a.RESOURCE_URL <> 'javascript:;'
+                 AND a.PAGE_TARGET IS NOT NULL
+        ORDER BY a.resource_order)
+ WHERE ROWNUM = 1
+ 	]]>
+	</select>
+	
+	<select id="getMajorProjectCatalog" parameterClass="java.util.Map" resultClass="Catalog">
+		SELECT a.RESOURCE_ID AS id,
+		a.PARENT_ID AS pId,
+		a.RESOURCE_NAME AS name,
+		a.RESOURCE_URL AS url,
+		a.PAGE_TARGET AS target,
+		'true' AS open
+		FROM TRAFFIC_MAJOR_PORJECT b
+		join TRAFFIC_RESOURCE a ON b.MAJOID = a.RESOURCE_ID
+		ORDER BY
+		b.majoSort nulls last
+	</select>
+	
+	<select id="getPageCatalogList" parameterClass="Catalog" resultClass="Catalog">
+		
+		SELECT * FROM (
+			select c.news_id newsID,
+			a.News_Title newsTitle,
+			to_char(a.entry_date, 'yyyy/MM/dd') entryDate,
+			a.entry_user entryuser,
+			a.News_Status newsStatusID,
+			b.info_name newsStatusName,
+			a.APPROVALER
+			approvaler,
+			c.PAGE_ID programType,
+			c.IS_FIRST isFirst
+			from
+			TRAFFIC_PAGE_NEWS_REF_T c
+			join Traffic_Text_News_Info_T a on c.news_id
+			= a.NEWS_ID and c.is_del =
+			'0'
+			join Traffic_Base_Info_T b on
+			a.News_Status = b.Info_ID and b.is_del = '0'
+			and a.is_del = '0' and a.news_status = 7
+			where
+			a.News_Part_Tag = '1' and c.page_id =#id#
+			order by a.entry_date desc
+		)t
+		where ROWNUM>0 and <![CDATA[ ROWNUM<=5 ]]> 
+	</select>
+	<select id="getMultiTopmenu" parameterClass="Catalog" resultClass="Catalog">
+
+		select a.RESOURCE_ID AS id,
+		a.PARENT_ID AS pId,
+		a.RESOURCE_NAME AS name,
+		a.RESOURCE_URL AS url,
+		a.PAGE_TARGET AS target,
+		'true' AS open
+		from
+		TRAFFIC_RESOURCE a
+		where a.resource_id like '%'||#id#||'%' order by  a.resource_id
+	</select>
+</sqlMap>

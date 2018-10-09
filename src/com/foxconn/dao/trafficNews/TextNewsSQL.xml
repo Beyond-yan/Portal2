@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="TextNews">
+ <typeAlias alias="textNews"  type="com.foxconn.pojo.trafficNews.TextNews"/>
+ <typeAlias alias="userReadRecord"  type="com.foxconn.pojo.trafficNews.UserReadRecord"/>
+ <typeAlias alias="newsCommendInfo"  type="com.foxconn.pojo.trafficNews.NewsCommendInfo"/>
+ 
+  <select id="selectProgramTypeName" parameterClass="java.lang.String" resultClass="java.lang.String">
+  	  select resource_name  from   TRAFFIC_RESOURCE
+       where resource_id=#resourceID#
+     and is_del='0'
+  </select>
+ 
+  <select id="getTextNewsDetail" parameterClass="textNews" resultClass="textNews">
+   select  a.news_id newsID,a.news_title newsTitle,a.SUB_NEWS_TITLE subNewsTitle,
+   a.NEWS_CONTENT newsContent,
+    nvl(a.News_Source,0) newsSource,
+    <!--b.INFO_NAME newsSourceName,  modify by david on date 2013/09/23 后台预览功能需要，当下拉框文档来源未选择时预览有异常-->
+    decode(b.INFO_NAME,null,nvl(a.NEWS_SOURCE_DES,''),b.INFO_NAME) newsSourceName,
+    
+     a.READCOUNT readRecordCount,
+<!--     a.EFFECTIVECOUNT effectiveCount,a.EMOTIONALCOUNT emotionalCount, -->
+<!--     a.HAPPYCOUNT happyCount,a.NONSENSECOUNT nonsenseCount,a.BORINGCOUNT boringCount, -->
+<!--     a.FEARCOUNT fearCount,a.SADCOUNT sadCount,a.ANGRYCOUNT angryCount, -->
+    a.news_key_word newsKeyWord,
+    a.program_type programType,
+    to_char(a.modify_date,'yyyy-mm-dd HH24:mi') modifyDate,
+    to_char(a.ENTRY_DATE,'yyyy-mm-dd HH24:mi') entryDate,
+    a.IS_BAN
+    from  Traffic_Text_News_Info_T a
+    left join Traffic_Base_Info_T b
+    on  a.NEWS_SOURCE=b.INFO_ID
+    and b.IS_DEL='0'
+    where 1=1
+    <dynamic>
+	 <isNotEmpty prepend="and" property="newsID">
+			a.News_ID = #newsID#	
+	 </isNotEmpty>
+	</dynamic>
+  </select>
+  
+  <update id="updateNewsReadCount" parameterClass="userReadRecord">
+  	update Traffic_Text_News_Info_T set  READCOUNT=READCOUNT+1
+  	where  news_id = #newsID#
+  </update>
+
+  <insert id="insertReadRecord" parameterClass="userReadRecord">
+ 	 insert into Traffic_User_Read_Record_T
+ 	 values(sys_guid(),#newsID#,#userIP#,sysdate) 
+  </insert>
+  
+  <insert id="insertNewsCommendInfo" parameterClass="newsCommendInfo">
+  	 insert into TRAFFIC_NEWS_COMMEND_INFO_T
+  	 values(sys_guid(),#commendUserIP#,#newsID#,sysdate)
+  </insert>
+  
+  <select id="getNewsCommendInfoCount" resultClass="java.lang.Integer"  parameterClass="newsCommendInfo">
+  	 select count(COMMEND_ID) from TRAFFIC_NEWS_COMMEND_INFO_T
+  	 where COMMEND_USER_IP=#commendUserIP#
+  	 and   NEWS_ID=#newsID#
+  </select>
+  
+  <update id='updateEffective' parameterClass="textNews">
+  	update Traffic_Text_News_Info_T set  EffectiveCount=EffectiveCount+1
+  	where  news_id = #newsID#
+  </update>
+  
+ 
+  <update id='updateEmotional' parameterClass="textNews">
+    update Traffic_Text_News_Info_T set  EmotionalCount=EmotionalCount+1
+  	where  news_id = #newsID#	
+  </update>
+  
+  <update id='updateHappy' parameterClass="textNews">
+    update Traffic_Text_News_Info_T set  HappyCount=HappyCount+1
+  	where  news_id = #newsID#	
+  </update>
+  
+  <update id='updateNonsense' parameterClass="textNews">
+  	update Traffic_Text_News_Info_T set  NonsenseCount=NonsenseCount+1
+  	where  news_id = #newsID#	
+  </update>
+  
+   <update id='updateBoring' parameterClass="textNews">
+    update Traffic_Text_News_Info_T set  BoringCount=BoringCount+1
+  	where  news_id = #newsID#	
+  </update>
+  
+  <update id='updateFear' parameterClass="textNews">
+  	update Traffic_Text_News_Info_T set  FearCount=FearCount+1
+  	where  news_id = #newsID#	
+  </update>
+  
+   <update id='updateSad' parameterClass="textNews">
+  	update Traffic_Text_News_Info_T set  SadCount=SadCount+1
+  	where  news_id = #newsID#	
+  </update>
+  
+   <update id='updateAngry' parameterClass="textNews">
+  	update Traffic_Text_News_Info_T set  AngryCount=AngryCount+1
+  	where  news_id = #newsID#	
+  </update>
+  
+  <!-- 获取重庆交通新闻列表 F3228777 2013-06-21-->
+  <!--modify by david on date 2013/08/14 as of 分發關係表加入 -->
+  <select id="getCQTrafficNewsList" resultClass="textNews" >
+  	 select
+      a.news_id as newsID,
+      b.news_title as newsTitle,
+      b.news_content as newsContent,
+      b.sub_news_title as subNewsTitle,
+      b.modify_date as modifyDate,
+      to_char(b.ENTRY_DATE,'[yyyy-mm-dd]') as entryDate
+      from
+      TRAFFIC_PAGE_NEWS_REF_T a
+      join
+      traffic_text_news_info_t b
+      on a.NEWS_ID=b.NEWS_ID
+      and b.news_part_tag = '1'
+      and b.is_del = '0'
+      and a.is_del='0'
+      <!--modify by david on date 2013/08/14 只有发表的状态新闻才能在前台看到 -->
+	  and b.NEWS_STATUS = #newsStatusID#
+      and a.page_id=#programType#
+      	<![CDATA[and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)	]]>
+	  <!--order by b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last -->
+      order by b.STICK_STATE desc nulls last,b.PRESS_DATE DESC NULLS last,b.ENTRY_DATE desc NULLS last
+  </select>
+  
+  <!-- 获取重庆交通新闻列表记录数 F3228777 2013-06-21-->
+   <!--modify by david on date 2013/08/14 as of 分發關係表加入 -->
+  <select id="getCQTrafficNewsListCount" resultClass="java.lang.Integer"  parameterClass="textNews">
+  	select
+  	count(a.page_id)
+  	from
+    TRAFFIC_PAGE_NEWS_REF_T a
+  	join traffic_text_news_info_t b
+  	on a.NEWS_ID=b.NEWS_ID
+  	and b.news_part_tag = '1'
+  	and a.is_del = '0'
+  	and b.is_del='0'
+	and b.NEWS_STATUS = #newsStatusID#
+    and a.page_id=#programType#
+     	<![CDATA[and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)	]]>
+  	<!--modify by david on date 2013/08/14 只有发表的状态新闻才能在前台看到 -->
+
+  </select>
+  
+  <!-- 获取一周热点新闻列表 F3228777 2013-06-22-->
+  <!--modify by david on date 2013/08/14 as of 分發關係表加入 -->
+  <select id="getHotNewsListWeek" resultClass="textNews" parameterClass="textNews">
+  	select
+  	a.news_id as newsID,
+  	b.news_title as newsTitle
+  	from
+  	TRAFFIC_PAGE_NEWS_REF_T a
+  	join  traffic_text_news_info_t b
+  	on a.NEWS_ID=b.NEWS_ID
+  	and b.news_part_tag = '1'
+  	and a.is_del='0'
+  	and b.ENTRY_DATE between sysdate-7 and sysdate
+  	and
+  	b.is_del = '0'
+  	<!-- modify by david on date 2013/08/14 只有发表的状态新闻才能在前台看到 -->
+	and b.NEWS_STATUS = #newsStatusID#
+    and a.page_id=#programType#
+     	<![CDATA[and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)	]]>
+  	order by b.readcount desc
+  </select>
+  
+   <!-- 获取一月热点新闻列表 F3228777 2013-06-22-->
+   <!--modify by david on date 2013/08/14 as of 分發關係表加入 -->
+  <select id="getHotNewsListMonth" resultClass="textNews" parameterClass="textNews">
+  	select
+  	a.news_id as newsID,
+  	b.news_title as newsTitle,
+  	b.program_type programType
+  	from
+  	TRAFFIC_PAGE_NEWS_REF_T a
+  	join  traffic_text_news_info_t b
+  	on  a.NEWS_ID=b.NEWS_ID
+    and b.news_part_tag = '1'
+  	and b.is_del='0'
+  	and b.ENTRY_DATE between add_months(sysdate,-1) and sysdate
+  	and b.is_del = '0'
+  	and a.is_del= '0'
+  	<!--modify by david on date 2013/08/14 只有发表的状态新闻才能在前台看到 -->
+	and b.NEWS_STATUS = #newsStatusID#
+    and a.page_id=#programType#
+     	<![CDATA[and (b.PRESS_DATE<=sysdate or b.PRESS_DATE is null)	]]>
+  	order by b.readcount desc
+  </select>
+</sqlMap>

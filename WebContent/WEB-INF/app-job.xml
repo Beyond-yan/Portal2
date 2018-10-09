@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<!--Job   -->
+<bean id="updateKeyWordsIndexJob" class="com.foxconn.job.UpdateKeyWordsIndexJob"/>
+<!-- JobFactory       -->
+
+<bean id="keyWordsJobFactory"
+   class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean" >
+   <property name="targetObject" ref="updateKeyWordsIndexJob" />
+   <property name="targetMethod" value ="updateKeyWordsJob" />
+   <property name="concurrent" value="false" />
+</bean>
+
+<!--Trigger Start -->
+
+<bean id="keyWordsTrigger"
+   class="org.springframework.scheduling.quartz.CronTriggerBean">
+   <property name="cronExpression">
+   <!--每天晚上11点执行一次-->
+   <!--<value>0 0 23 * * ?</value> -->
+<!--    <value>0 0/5 * * * ?</value>  --> 
+   <!--每天中午12点,晚上11点执行-->
+   <value>0 0 12,23 * * ?</value> 
+   </property>
+   <property name="jobDetail" ref="keyWordsJobFactory" />
+
+</bean>
+
+<!--Trigger End -->
+
+<bean id="quartzScheduler"
+	 class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+   <property name="triggers">
+    <list>
+        <ref bean="keyWordsTrigger" />
+    </list>
+   </property>
+</bean>
+
+</beans>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="MunicipalGovDocument">
+	<typeAlias alias="govDocument" type="com.foxconn.pojo.govdocument.municipalGovDocument" />
+
+ 	<select id="getMunicipalGovDocument" parameterClass="govDocument" resultClass="govDocument" >
+	SELECT * FROM (
+		SELECT tt.*, ROWNUM AS rowno FROM (
+			SELECT A.DOCUMENT_ID, A.DOCUMENT_TITLE, A.READ_NUMBER, A.DOCUMENT_CONTENT, b.INFO_NAME DOCUMENT_SOURCE, A.PUBLISH_MECHANISM, 
+				   to_char(A.CREATE_TIME,'yyyy.MM.dd hh24:mi:ss') CREATE_TIME, A.DOCUMENT_SUBTITLE, A.DOCUMENT_ABSTRACT, 
+				   to_char(A.PUBLISH_TIME,'yyyy.MM.dd hh24:mi:ss') PUBLISH_TIME, A.KEYWORD, A.DOCUMENT_STATUS
+				   FROM MUNICIPAL_GOV_DOCUMENT A LEFT JOIN TRAFFIC_BASE_INFO_T b ON b.info_id = A.DOCUMENT_SOURCE
+	 			   WHERE A.IS_DEL=0 and A.DOCUMENT_STATUS=0 
+				<!-- and <![CDATA[PUBLISH_TIME <= to_date(#PUBLISH_TIME#,'yyyy/MM/dd hh24:mi:ss')]]> -->
+				   order by PUBLISH_TIME desc)tt WHERE <![CDATA[ ROWNUM <= ((#pageIndex#) * #pageSize#)]]>
+		) table_alias WHERE <![CDATA[ table_alias.rowno > ((#pageIndex#-1) * #pageSize#)]]> 
+ 	</select>
+ 	
+ 	<select id="getMunicipalGovDocumentCount" parameterClass="govDocument" resultClass="java.lang.Integer">
+		SELECT COUNT(*) FROM MUNICIPAL_GOV_DOCUMENT 
+			WHERE  IS_DEL=0 and DOCUMENT_STATUS=0 
+			<!-- and <![CDATA[PUBLISH_TIME <= to_date(#PUBLISH_TIME#,'yyyy/MM/dd hh24:mi:ss')]]> -->
+ 	</select>
+ 	
+ 	<select id="getGovDocumentForID"   resultClass="govDocument">
+		SELECT A.DOCUMENT_ID, A.READ_NUMBER, A.DOCUMENT_TITLE, A.DOCUMENT_CONTENT, b.INFO_NAME DOCUMENT_SOURCE, A.PUBLISH_MECHANISM, 
+			   to_char(A.CREATE_TIME,'yyyy.MM.dd hh24:mi:ss') CREATE_TIME, A.DOCUMENT_SUBTITLE, A.DOCUMENT_ABSTRACT, 
+			   to_char(A.PUBLISH_TIME,'yyyy.MM.dd hh24:mi:ss') PUBLISH_TIME, A.KEYWORD, A.DOCUMENT_STATUS
+			   FROM MUNICIPAL_GOV_DOCUMENT A LEFT JOIN TRAFFIC_BASE_INFO_T b ON b.info_id = A.DOCUMENT_SOURCE
+ 			   WHERE A.DOCUMENT_ID=#DOCUMENT_ID#
+ 	</select>
+ 	
+ 	<update id="updateReadNumber" parameterClass="govDocument">
+ 		update MUNICIPAL_GOV_DOCUMENT set READ_NUMBER=#READ_NUMBER# where DOCUMENT_ID=#DOCUMENT_ID#
+ 	</update>
+</sqlMap>

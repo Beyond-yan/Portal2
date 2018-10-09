@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="siteMapSQL">
+	<typeAlias alias="siteMap" type="com.foxconn.pojo.sitemap.SiteMap"/>
+	
+	<select id="getSiteMapList" parameterClass="siteMap" resultClass="siteMap">
+		select id,name,url,pid,isClick,isDelete,mapStyle,sotr from SITE_MAP where 1=1
+		<dynamic>
+			<isNotEmpty prepend="and" property="isClick">
+				ISCLICK = #isClick#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="id">
+				ID = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="pid">
+				PID = #pid#
+			</isNotEmpty>
+		</dynamic>
+		order by pid,sotr asc
+	</select>
+	
+</sqlMap>

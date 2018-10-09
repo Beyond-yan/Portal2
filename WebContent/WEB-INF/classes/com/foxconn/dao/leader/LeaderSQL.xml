@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Leader">
+<typeAlias alias="leader"  type="com.foxconn.pojo.leader.Leader"/>
+ 
+  <select id="getLeaderActivate" parameterClass="Map" resultClass="leader">
+  		<![CDATA[
+SELECT newsID,
+       newsTitle,
+       entryDate,
+       entryuser,
+       newsStatusID,
+       newsStatusName
+  FROM (SELECT ROWNUM rn, t.*
+          FROM (  SELECT a.news_id newsID,
+                         a.News_Title newsTitle,
+                         TO_CHAR (a.entry_date, 'yyyy/MM/dd') entryDate,
+                         a.entry_user entryuser,
+                         a.News_Status newsStatusID,
+                         b.info_name newsStatusName
+                    FROM Traffic_Text_News_Info_T a
+                         JOIN Traffic_Base_Info_T b
+                            ON     a.News_Status = b.Info_ID
+                               AND b.is_del = '0'
+                               AND a.is_del = '0'
+                   WHERE a.News_Part_Tag = '1' 
+					AND A.NEWS_STATUS = '7' AND a.Program_Type = #leaderId#
+                ORDER BY a.entry_date DESC) t
+         WHERE ROWNUM <= #rEnd#)
+ WHERE rn >= #rStart#
+ 		]]>
+  </select>
+  
+  	<select id="getActivateCount" resultClass="java.lang.Integer" parameterClass="String">
+SELECT count(*)
+                    FROM Traffic_Text_News_Info_T a
+                         JOIN Traffic_Base_Info_T b
+                            ON     a.News_Status = b.Info_ID
+                               AND b.is_del = '0'
+                               AND a.is_del = '0'
+                   WHERE a.News_Part_Tag = '1' AND a.Program_Type = #leaderId#
+	</select>
+  
+   <select id="getLeaderInfo" parameterClass="leader"  resultClass="leader">
+  SELECT t.LEADER_ID AS leaderId,
+         t.leader_name AS leaderName,
+         REPLACE (t.leader_post, ',', '、') AS leaderPost,
+         t.leader_photos_url AS leaderPhotosUrl,
+         t.leader_resume AS leaderResume
+    FROM TRAFFIC_LEADER_INFO_T t
+   WHERE t.status = 7 AND T.IS_DEL = '0'
+ORDER BY LEADER_ORDER
+
+  </select>
+  <select id="getLeaderResume" parameterClass="leader"  resultClass="leader">
+  	select t.LEADER_ID as leaderId,
+       t.leader_name as leaderName,
+       t.leader_post as leaderPost,
+       t.leader_photos_url as leaderPhotosUrl,
+       t.leader_resume as leaderResume
+  from TRAFFIC_LEADER_INFO_T t
+where  t.status='7'
+and    t.LEADER_ID=#leaderId#
+
+  </select>
+</sqlMap>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+	PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+
+	<settings statementCachingEnabled="true" cacheModelsEnabled="true"
+		useStatementNamespaces="true" classInfoCacheEnabled="true" />
+
+	<sqlMap resource="com/foxconn/dao/trafficNews/TextNewsSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/trafficNews/PhotosNewsSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/index/IndexSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/trafficNews/MagazineNewsSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/trafficNews/VideoNewsSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/trafficNews/SubjectNewsSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/communication/CommunicationSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/leader/LeaderSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/organization/OrganizationSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/interview/InterviewSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/opencatalog/CatalogSQL.xml" />
+
+	<sqlMap resource="com/foxconn/dao/questionaire/QuestionaireSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/interview/InterviewPlanSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/trafficNews/NewsCommentSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/govdocument/municipalGovDocumentSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/sitemap/SiteMapSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/trafficcosts/TrafficCostsSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/trafficNews/TrafficConferenceSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/watertransportIllegal/WaterTransportIllegalSQL.xml" />
+	
+	<sqlMap resource="com/foxconn/dao/trafficconference/Hyzt2018SQL.xml" />
+	
+</sqlMapConfig>

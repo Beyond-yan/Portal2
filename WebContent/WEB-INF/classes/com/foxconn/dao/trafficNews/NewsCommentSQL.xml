@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="NewsComment">
+
+ <typeAlias alias="textNews"  type="com.foxconn.pojo.trafficNews.TextNews"/>
+ <typeAlias alias="newsComment"  type="com.foxconn.pojo.trafficNews.NewsComment"/>
+ 
+  <select id="getNewsCommentListFromNewsId" parameterClass="newsComment" 
+  	resultClass="newsComment">
+      SELECT
+      *
+      FROM
+      TRAFFIC_TEXT_NEWS_COMMENTARY_T START WITH PARENT_ID IS NULL
+      AND NEWS_ID=#NEWS_ID# and AUDIT_RESULT=1 and IS_DEL=0 and COMMENT_CATEGORY=#COMMENT_CATEGORY#  CONNECT BY PRIOR COMMENT_ID = PARENT_ID ORDER BY COMMENT_TIME
+  </select>
+    <select id="getNewsCommentListFromCommentId" parameterClass="newsComment"
+            resultClass="newsComment">
+
+        SELECT a.*,b.COMMENT_CONTENT AS NEWS_TITLE FROM TRAFFIC_TEXT_NEWS_COMMENTARY_T a LEFT JOIN TRAFFIC_TEXT_NEWS_COMMENTARY_T b ON b.COMMENT_ID=a.PARENT_ID
+        START WITH a.COMMENT_ID=#COMMENT_ID#  CONNECT BY PRIOR a.COMMENT_ID=a.PARENT_ID ORDER BY a.COMMENT_TIME ASC
+    </select>
+  <insert id="addNewsComment" parameterClass="newsComment">
+  	insert into TRAFFIC_TEXT_NEWS_COMMENTARY_T values (SYS_GUID(),#NEWS_ID#,#COMMENT_CONTENT#,#COMMENT_IPADDRS#,#COMMENT_TIME#,0,0,#COMMENT_CATEGORY#)
+  </insert>
+  
+</sqlMap>

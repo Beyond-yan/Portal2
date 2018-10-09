@@ -1,0 +1,1727 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>重庆市交通委员会</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="/css/main.css?version=20180718"/>
+    <link rel="stylesheet" type="text/css" href="/css/index.css?version=20180718"/>
+    <link rel="stylesheet" type="text/css" href="/css/zzsc.css"/>
+
+    <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/js/scroll.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/jquery.SuperSlide.js"></script>
+    <script type="text/javascript" src="/js/jquery.poptrox.min.js"></script>
+    <style>
+        .column-con li {
+            margin-bottom: 12px;
+            height: 23px;
+        }
+
+        .btn-login {
+            line-height: 26px;
+            width: 155px;
+            height: 29px;
+            text-align: center;
+            font: bold 16px/27px 微软雅黑;
+            color: #fff;
+            background-position: -204px -153px;
+            background-image: url(/images/bg_sprite.png);
+            background-repeat: no-repeat;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        //焦点图JS
+        $(function () {
+        	
+            /* 		myFocus.setting({
+             style : 'mF_expo2010',
+             id : 'myFocus',
+             time : 3
+             });//style为风格样式，id为焦点图ID，time为每帧间隔时间(秒) */
+            $('#gallery').poptrox({
+                usePopupCaption: true
+            });
+
+            $(".focusBox").slide({
+                titCell: ".num li",
+                mainCell: ".pic",
+                effect: "fold",
+                autoPlay: true,
+                trigger: "click",
+                delayTime: 1000,
+                interTime: 5000,
+                startFun: function (i) {
+                    jQuery(".focusBox .txt li").eq(i).animate({
+                        "bottom": 0
+                    }).siblings().animate({
+                        "bottom": -36
+                    });
+                }
+            });
+$(".focusBox1").slide({
+                titCell: ".num li",
+                mainCell: ".pic",
+                effect: "fold",
+                autoPlay: true,
+                trigger: "click",
+                delayTime: 1000,
+                interTime: 5000,
+                startFun: function (i) {
+                    jQuery(".focusBox1 .txt li").eq(i).animate({
+                        "bottom": 0
+                    }).siblings().animate({
+                        "bottom": -36
+                    });
+                }
+            });
+            var subjectSrc = "/Portal/subjects/20131213/subject.html";
+            if (subjectSrc != null && subjectSrc != "") {
+                //	$("#subjectFrame").attr("src", subjectSrc);
+            }
+            $("#subjectFrame").attr("src", "/subjects/20131213/subject.html");
+            getRoadCondition();
+            getNationwideNews();
+            getMailList();
+            //getStateCouncilInfo();
+
+            //added by Cube @140731
+            getRoadConditionGSGD();
+            getGovDocument();
+            getPublicData();
+        });
+
+        function loadIndexExternalResource() {
+            $("#weatherIframe")
+                .attr(
+                    "src",
+                    "http://tianqi.2345.com/plugin/widget/index.htm?s=3&z=2&t=1&v=0&d=1&k=&f=1&q=1&e=0&a=0&c=57516&w=180&h=36");
+            document.getElementById("visiterCounter").src = "index.do?action=getVisiterCounter";
+            var subjectSrc = "/Portal/subjects/20131213/subject.html";
+            if (subjectSrc != null && subjectSrc != "")
+            //$("#subjectFrame").attr("src", subjectSrc);
+            //$("#lxcx").attr("src", "http://cx.cqjt.gov.cn/widget/cxgh/loader.htm?width=222&theme=blue&height=150");
+                $("#wsbs")
+                    .attr("src",
+                        "http://bs.cqjt.gov.cn:8000/cqnet/web/webdashboard!onlineServiceHall.do");
+
+        }
+
+        function getRoadCondition() {
+            var details = "http://cx.cqjt.gov.cn/zjcx/main.html?toZjMain=controlInfo,";
+            $
+                .ajax({
+                    url: "index.do?action=getRoadCondition",
+                    cache: false,
+                    type: "GET",
+                    dataType: "text",
+                    success: function (data) {
+                        var content = eval('(' + data + ')');
+                        $
+                            .each(
+                                content.data,
+                                function (key, value) {
+                                    $("#roadCondition")
+                                        .append(
+                                            "<li><a target=\"_blank\" href=\"" + details + value.longitude + "," + value.latitude + "," + value.id + "\" title=\"" + value.content + "\"><b class=\"dot\"></b>"
+                                            + value.content
+                                            + "</a></li>");
+                                });
+                        if (content.data.length > 10) {
+                            $(".scrollList").Scroll({
+                                line: 1,
+                                speed: 500,
+                                timer: 15000
+                            });
+                        } else if (content.data.length == 0) {
+                            $("#roadCondition").append("<li><a href=\"javascript:;\" ><b class=\"dot\"></b>路况畅通</a></li>");
+                        }
+                    }
+                });
+        }
+        function getPublicData() {
+            $
+                .ajax({
+                    url: "textNews.do?action=getNewsJsonList",
+                    cache: false,
+                    type: "GET",
+                    dataType: "text",
+                    data: {
+                        "curpage": 0,
+                        "pagesize": 20,
+                        "programType":"01010102"
+                    },
+                    success: function (data) {
+                        var content = eval('(' + data + ')');
+                        var html="";
+                        content=content.root;
+                        for (var i = 0; i < content.length; i++) {
+                            if(i%4==0){
+                                if(i>0){
+                                    html+="</div>";
+                                }
+                                html+="<div class=\"table_row bold\">";
+                            }
+                            html+="<div class=\"table_cell\"><a target=\"_blank\" style=\"color:#3B687E;\" href=\""+content[i].subNewsTitle+"\">"+content[i].newsTitle+"</a> </div>\n";
+                        }
+                        if(html!=""){
+                            html+="</div>";
+                        }
+                        $("#public_table").append(html);
+                    }
+                });
+        }
+        //added by Cube @140732
+        function getRoadConditionGSGD() {
+            $
+                .ajax({
+                    url: "index.do?action=getRoadConditionGSGD",
+                    cache: false,
+                    type: "GET",
+                    dataType: "text",
+                    success: function (data) {
+                        var content = eval('(' + data + ')');
+
+                        $.each(content.data, function (key, value) {
+                            $("#roadConditionGSGD").append(
+                                "<li><a href=\"javascript:;\" title=\"" + value.content + "\"><b class=\"dot\"></b>" + value.content + "</a></li>");
+                        });
+                        $(".scrollListGSGD").Scroll({
+                            line: 1,
+                            speed: 500,
+                            timer: 15000
+                        });
+                    }
+                });
+        }
+
+
+        function getGovDocument() {
+            $.ajax({
+                url: "govDocument.do?action=getGovDocumentList",
+                cache: false,
+                type: "GET",
+                dataType: "text",
+                data: {
+                    "pageIndex": 1,
+                    "pageSize": 6,
+                },
+                success: function (data) {
+                    var content = eval('(' + data + ')');
+                    $("#govDocumentToId").append(FillGovDocument(content));
+                }
+            });
+        }
+
+        function FillGovDocument(content) {
+            var govDocumentHTML = "";
+            for (var i = 0; i < content.length; i++) {
+                govDocumentHTML += "<dd title='" + content[i].DOCUMENT_TITLE + "'>";
+                govDocumentHTML += "<a href='/govDocument.do?action=queryGovDocumentDetail&documentId=" + content[i].DOCUMENT_ID + "' target='_blank'>";
+                govDocumentHTML += content[i].DOCUMENT_TITLE + "</a></dd>";
+            }
+            return govDocumentHTML;
+        }
+
+        function getNationwideNews() {
+            $.ajax({
+                url: "index.do?action=nationNewsList",
+                cache: false,
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        $("#nationwideNews").append(
+                            "<dd title=\"" + value.text + "\"><a href=\"" + value.href + "\" target=\"_blank\">"
+                            + value.text + "</a></dd>");
+                    });
+                }
+            });
+        }
+
+        /* 国务院文件 20160901 */
+        function getStateCouncilInfo() {
+            $.ajax({
+                url: 'http://www.cq.gov.cn/gwywj/pushinfo.js',
+                dataType: "jsonp",
+                jsonp: "pushInfoJsonpCallBack",
+                jsonpCallback: "pushInfoJsonpCallBack",
+                success: function (data) {
+                    if (data && data.length > 0) {
+                        for (var i = 0; i < 6; i++) {
+                            var json = data[i];
+                            $("#stateCouncilInfo").append("<dd title=\"" + json.title + "\"><a href=\""
+                                + json.link + "\" target=\"_blank\">"
+                                + json.title + "</a></dd>");
+                        }
+                    }
+                },
+            });
+        }
+
+        function getMailList() {
+            $
+                .ajax({
+                    url: "index.do?action=recentlyMail",
+                    cache: false,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        $.each(data, function (key, value) {
+                            $("#mailList").append(
+                                "<li title=\"" + value.text + "\"><a href=\"" + value.href + "\" target=\"_blank\"><b class=\"sIcon i_mail\"></b>"
+                                + value.text
+                                + "</a> <span>"
+                                + value.date
+                                + "</span></li>");
+                        });
+                    }
+                });
+        }
+
+        function setTitle() {
+            var title = '我为大督查提建议';
+            if (title != null && title.length >= 30) {
+                var str = title.substring(0, 30) + " . . .";
+                $("#wjTitle").html("<b>主题：</b>111111111111");
+
+            }
+
+        }
+
+
+        function queryLk() {
+            var beginSite = $("#beginSite").val();
+            var endSite = $("#endSite").val();
+            location.href = "http://cx.cqjt.gov.cn/zjcx/car.html?cfd=&mdd=&startN=" + beginSite + "&endN=" + endSite
+        }
+
+        //滚动插件
+        (function ($) {
+            $.fn.extend({
+                Scroll: function (opt, callback) {
+                    //参数初始化
+                    if (!opt)
+                        var opt = {};
+                    var _this = this.eq(0).find("ul:first");
+                    var lineH = _this.find("li:first").height(), //获取行高
+                        line = opt.line ? parseInt(opt.line, 10) : parseInt(this.height() / lineH, 10), //每次滚动的行数，默认为一屏，即父容器高度
+                        speed = opt.speed ? parseInt(opt.speed, 10) : 500, //卷动速度，数值越大，速度越慢（毫秒）
+                        timer = opt.timer ? parseInt(opt.timer, 10) : 6000; //滚动的时间间隔（毫秒）
+
+                    if (line == 0)
+                        line = 1;
+                    var upHeight = 0 - line * lineH;
+                    //滚动函数
+                    scrollUp = function () {
+                        _this.animate({
+                            marginTop: upHeight
+                        }, speed, function () {
+                            for (i = 1; i <= line; i++) {
+                                _this.find("li:first").appendTo(_this);
+                            }
+                            _this.css({
+                                marginTop: 0
+                            });
+                        });
+                    }
+                    //鼠标事件绑定
+                    _this.hover(function () {
+                        clearInterval(timerID);
+                    }, function () {
+                        timerID = setInterval("scrollUp()", timer);
+
+                    }).mouseout();
+                }
+            })
+        })(jQuery);
+
+        function locationHref() {
+            //location.href ="http://cx.cqjt.gov.cn/index/UnderConstructionAnd.html";
+            window.open("http://cx.cqjt.gov.cn/index/UnderConstructionW.html", "_blank");
+        }
+    </script>
+</head>
+<body onload="loadIndexExternalResource()">
+<!--header Start-->
+
+<script src="/js/layer2.4/layer.js"></script>
+<!--header Start-->
+<div class="header clearfix">
+	<div class="tip">
+		<ul class="l">
+			<li id="dateView">今天是：2018年8月28日&nbsp;&nbsp;&nbsp;星期二</li>
+			<li class="weather clearfix"><iframe width="150px"
+					id="weatherIframe" scrolling="no" allowtransparency="true"
+					style="background-color: transparent; overflow: hidden;"
+					frameborder="0" height="25px"></iframe></li>
+		</ul>
+		<a title="网站导航" style="margin-left: 1em;" 
+			href="/index.do?action=postSiteMap" class="r">网站导航</a>
+		<a title="设为首页"
+			onclick="this.style.behavior='url(#default#homepage)';this.setHomePage(window.location.href);"
+			href="javascript:;" class="r">设为首页</a>
+		<a href="/search.jsp" style="margin-right: 10px;float: right;background: #0079C0;color: #fff;width: 66px;text-align: center;height: 22px;margin-top: 2px;border-radius: 3px;line-height: 22px;text-decoration: none;">高级搜索</a>
+		<div class="search">
+			<form action="/searchnewslist/-1_1.html" target="_blank"
+				name="searchForm" id="searchForm">
+				<input name=tn type=hidden value=baidu> <input type="text"
+					value="请输入关键字" onfocus="inputFocus(this)" onblur="inputBlur(this)"
+					name="word" id="word" /> 
+					<input name=tn type=hidden value="bds"> <input
+					name=cl type=hidden value="3"> <input name=ct type=hidden
+					value="2097152"> <input name=si type=hidden
+					value="www.cqjt.gov.cn"> <a href="javascript:;"
+					class="btn_search" title="搜索"
+					onclick="javascript:searchForm.submit();"></a>
+
+			</form>
+		</div>
+
+	</div>
+	<div class="clearfix" style="height:145px;">
+		<a href="/index.html" class="logo" target="_parent" style="clear:left"></a>
+		<div style="float: right;width:450px; height:100px;">
+			<embed src="/images/jiaowei201802.swf"
+				quality=high width=450 height=100 wmode=transparent
+				type='application/x-shockwave-flash'></embed>
+		</div>
+		<a href="http://tw.cqjt.gov.cn:8888/Portal_topic/" ><img src="/images/title5_5.png" style="height: 53px;margin-left: 125px;margin-top:18px;"/></a>
+
+	</div>
+	<!--topNav Start-->
+	<ul class="topNav" >
+<!-- 	<ul class="topNav" style="width: 1400px;margin-left: -140px;" > -->
+		<li>
+			<a href="http://cx.cqjt.gov.cn" class="i_menu first " target="_blank">
+			<img src="/images/top1.png" width="52" height="52" border="0" title="出行服务">
+			</a>
+			<div class="subMenu">
+				<a href="http://cx.cqjt.gov.cn/zjcx/main.html?loader=condition" target="_blank">高速路况</a>
+				<a href="http://cx.cqjt.gov.cn/ggcx/routePlan.html" target="_blank">城市交通</a>
+				<a href="http://cx.cqjt.gov.cn/cjcx/intercitybus.html?type=default" target="_blank">客运班车</a> <br> 
+				<a href="http://cx.cqjt.gov.cn/cjcx/train.html?type=default" target="_blank">火车时刻</a>
+				<a href="http://cx.cqjt.gov.cn/cjcx/flight.html?type=leave" target="_blank">航空动态</a>
+				<a href="http://cx.cqjt.gov.cn/bmfw/card.html" target="_blank">便民服务</a>
+			</div>
+		</li>
+		<li>
+			<a href="http://bs.cqjt.gov.cn:8000/cqnet/page/web/homePage.jsp" class="i_menu " target="_blank">
+				<img src="/images/top2.png" width="52" height="52" border="0" title="网上办事大厅">
+			</a>
+			<div class="subMenu">
+				<a href="http://zwfw.cq.gov.cn/public/index" target="_blank">网上申报</a> 
+				<a href="http://bs.cqjt.gov.cn:8000/cqnet/page/web/homePage.jsp?type=3" target="_blank">查询服务</a> <br> 
+				<a href="/openCatalog/init_/openCatalogList/01010901_1.html" target="_blank">公告公示</a>
+				<a href="http://zwfw.cq.gov.cn/icity/govservice/portal?id=5000000080" target="_blank">办事指引</a>
+			</div>
+		</li>
+		<li class="cur">
+			<a href="javascript:;" class="i_menu " target="_parent">
+				<img src="/images/top3.png" width="52" height="52" border="0">
+			</a>
+			<div class="subMenu">
+				<a href="/articleList/010101_1.html" target="_blank">交通新闻</a> 
+<!-- 				<a href="http://tw.cqjt.gov.cn:8082" target="_blank">交通图文</a> <br>  -->
+<!-- 				<a href="maintain.jsp" target="_blank">交通图文</a> <br>  -->
+				<a href="/photoNewsList.html" target="_blank">交通图片</a> <br> 
+				<a href="/magazines/2018.7.html" target="_blank">交通杂志</a> 
+				<a href="/videoNewsList.html" target="_blank">交通视频</a>
+			</div>
+		</li>
+<!--
+		<li>
+			<a href="http://hd.cqjt.gov.cn/" class="i_menu " target="_blank" title="交通活动">
+				<img src="/images/top5.png" width="52" height="52" border="0">
+			</a>
+			<div class="subMenu mr_0">
+				<a href="javascript:void(0)"  onclick="show(this,'mydiv1');" onMouseOut="hide2(this,'mydiv1');">交通影赛</a> 
+				<a href="javascript:void(0)"  onclick="show(this,'mydiv2');" onMouseOut="hide2(this,'mydiv2');">交通征文</a> <br> 
+				<a href="http://www.cqjt.gov.cn/questionaires/list_1.html" >问卷调查</a>
+				<a href="http://hd.cqjt.gov.cn/index.aspx?worksid=17" target="_blank">扶贫故事</a>
+			</div>
+		</li>-->
+		<li>
+			<a href="javascript:;" class="i_menu " target="_parent">
+				<img src="/images/top4.png" width="52" height="52" border="0">
+			</a>
+			<div class="subMenu mr_0">
+				<a href="/mailbox.html" target="_blank">领导信箱</a> <br>
+				<a href="/interviews/list_1.html" target="_blank">在线访谈</a>
+			</div>
+		</li>
+		<li>
+			<a href="javascript:;" class="i_menu " target="_blank" title="外部链接">
+				<img src="/images/top6.png" width="52" height="52" border="0">
+			</a>
+			<div class="subMenu mr_0">
+			<!-- 	<a href="http://www.mot.gov.cn/" target="_blank" >交通运输部</a>  -->
+			<a href="http://www.cq.gov.cn/gwywj/default_1.shtml" target="_blank" >国务院文件</a>
+				<a href="http://zizhan.mot.gov.cn/st/chongqing/" target="_blank">交通部子站</a> <br>
+			<!-- 	<a href="http://www.cq.gov.cn/" target="_blank" >重庆市政府</a>   -->
+			<a href="http://www.cqjt.gov.cn/govDocument.do?action=jumpToGocDocumentList" target="_blank" >市政府文件</a>
+				<a href="http://www.cq.gov.cn/publicinfo/web/views/Show!index.action?orgSid=101" target="_blank" >交委信息公开</a>
+			</div>
+		</li>
+	</ul>
+	<!--topNav End-->
+</div>
+<!--header End-->
+
+<!-- 第一个按钮div -->
+<div id="mydiv1" style="position:absolute; z-index:999; display:none; background:#ffffff; width:72px; height:100px" onMouseOver="show2(this,'mydiv1');" onMouseOut="hide(this,'mydiv1');"> 
+	<div style="margin-top:4px;">
+		<a href="javascript:click_link_2()" >
+			<img alt="" src="/images/link_2.png">			
+		</a>		
+		<a href="javascript:click_link_0()" >
+			<img  alt="" src="/images/link_0.png">	
+		</a>
+		<a href="javascript:click_link_1()" >
+			<img  alt="" src="/images/link_1.png">	
+		</a>
+	</div>
+</div> 
+
+<!-- 第二个按钮div -->
+<div id="mydiv2" border='3px'; style="position:absolute; z-index:999; display:none; background:#ffffff; width:72px;height:100px" onMouseOver="show2(this,'mydiv2');" onMouseOut="hide(this,'mydiv2');"> 	 
+ 	<div style="margin-top:4px;">
+		<a href="javascript:click_link_5()" >
+			<img alt="" src="/images/link_2.png">
+		</a>
+		<a href="javascript:click_link_3()" >
+			<img  alt="" src="/images/link_3.png">	
+		</a>
+		<a href="javascript:click_link_4()" >
+			<img alt="" src="/images/link_4.png">
+		</a>
+	</div>
+</div> 
+
+<div style="display:none">
+<img id="floatImg" style="position:fixed;z-index:78;top:373px;left:150px;cursor:hand;" onclick="closeImgDiv();" src="/images/delete.png"></img>
+<div id="floatDiv" style="cursor:pointer; position:fixed;z-index:77;top:385px;left:5px;height:120px;width:150px;border:1px solid #0473b3;padding:2px;">
+	<a onclick="openImages();" target="_blank">
+		<img src="/images/newYear2018.jpg" style="height:120px;width:150px;"></img>
+	</a>
+</div>
+</div>
+
+
+<div style="display: none;">
+<img id="floatImg_1" style="position:fixed;z-index:78;top:303px;left:150px;cursor:hand;" onclick="closeImgDiv_1();" src="/images/delete.png"></img>
+<div id="floatDiv_1" style="cursor:pointer; position:fixed;z-index:77;top:308px;left:5px;height:120px;width:150px;border:1px solid #0473b3;padding:2px;">
+	<a href="http://www.cqjt.gov.cn:8082/topic/" target="_blank">
+		<img src="/images/newYear2017.jpg" style="height:120px;width:150px;"></img>
+	</a>
+</div>
+</div>
+
+<style>
+.demo-class .layui-layer-title{background:#c00; color:#fff; border: none;}
+</style>
+
+<script>
+
+
+function openImages(){
+	layer.open({
+	  type: 2,
+	  title:'新年贺词',
+	  skin : 'demo-class',
+	  area: ['780px', '600px'],
+	  fixed : true,
+	  content: '/index.do?action=jumpNewYear'
+	});
+}
+
+$(document).ready(function(){
+	//refreshLocation();
+	
+});
+$(window).scroll( function(){ 
+	//refreshLocation();
+});
+
+//以下为鼠标悬停事件
+var focus=false;
+function show(obj,id) { 
+	var objDiv = $("#"+id+""); 
+	var event_link=getEvent();
+	$(objDiv).css("display","block"); 
+	$(objDiv).css("left", event_link.clientX); 
+	$(objDiv).css("top", event_link.clientY + 10); 
+	
+	if(id == "mydiv2"){//隐藏上一个DIV
+	 	$('#mydiv1').css("display", "none"); 
+	}else{
+	 	$('#mydiv2').css("display", "none"); 
+	}
+} 
+
+function show2(obj,id) { 
+	focus=true;
+}	
+
+function hide(obj,id) { 
+// 	var objDiv = $("#"+id+""); 
+// 	$(objDiv).css("display", "none"); 
+	var objDiv = $("#"+id+""); 
+	focus=false;
+	setTimeout('hide3("'+id+'")',1000);
+} 
+
+function hide2(obj,id) { 
+	var objDiv = $("#"+id+""); 
+	focus=false;
+	setTimeout('hide3("'+id+'")',3000);
+} 
+
+function hide3(id) { 
+	var objDiv = $("#"+id+""); 
+	if(!focus)$(objDiv).css('display', 'none');
+    return;
+} 
+//以下为鼠标悬停事件
+var focus=false;
+function show(obj,id) { 
+	var objDiv = $("#"+id+""); 
+	var event_link=getEvent();
+	$(objDiv).css("display","block"); 
+	$(objDiv).css("left", event_link.clientX); 
+	$(objDiv).css("top", event_link.clientY + 10); 
+	
+	if(id == "mydiv2"){//隐藏上一个DIV
+	 	$('#mydiv1').css("display", "none"); 
+	}else{
+	 	$('#mydiv2').css("display", "none"); 
+	}
+} 
+
+function show2(obj,id) { 
+	focus=true;
+}	
+
+function hide(obj,id) { 
+// 	var objDiv = $("#"+id+""); 
+// 	$(objDiv).css("display", "none"); 
+	var objDiv = $("#"+id+""); 
+	focus=false;
+	setTimeout('hide3("'+id+'")',1000);
+} 
+
+function hide2(obj,id) { 
+	var objDiv = $("#"+id+""); 
+	focus=false;
+	setTimeout('hide3("'+id+'")',3000);
+} 
+
+function hide3(id) { 
+	var objDiv = $("#"+id+""); 
+	if(!focus)$(objDiv).css('display', 'none');
+    return;
+} 
+
+function refreshLocation(){
+	var top=200;//初始化离上方高度
+	var right=10;//初始化离右边宽度
+	var height=document.documentElement.scrollTop+top;
+	$("#floatImg").css("top",height);
+	$("#floatDiv").css("top",height+8);
+	var width=((document.body.clientWidth-1024)/2-150)/2;
+	if(width<10)width=right;
+	$("#floatImg").css("right",width+8);
+	$("#floatDiv").css("right",width);
+}
+
+function closeImgDiv(){
+    $("#floatImg").remove();
+    $("#floatDiv").remove();
+}
+function closeImgDiv_1(){
+    $("#floatImg_1").remove();
+    $("#floatDiv_1").remove();
+}
+
+
+function getEvent() //得到event，同时兼容ie和ff的写法
+{  
+    if(document.all)   return window.event;    
+    func=getEvent.caller;        
+    while(func!=null){  
+        var arg0=func.arguments[0];
+        if(arg0){
+          if((arg0.constructor==Event || arg0.constructor ==MouseEvent) || (typeof(arg0)=="object" && arg0.preventDefault && arg0.stopPropagation))
+          {  
+          	return arg0;
+          }
+        }
+			func=func.caller;
+        }
+	return null;
+}
+//链接跳转
+function click_link_0(){
+	 window.open("http://hd.cqjt.gov.cn/index.aspx?worksid=23");
+}
+function click_link_1(){
+	 window.open("http://hd.cqjt.gov.cn/index.aspx?worksid=2");
+}
+function click_link_2(){
+	 window.open("http://hd.cqjt.gov.cn/index.aspx?worksid=2216");
+}
+function click_link_3(){
+	 window.open("http://hd.cqjt.gov.cn/index.aspx?worksid=16");
+}
+function click_link_4(){
+	 window.open("http://hd.cqjt.gov.cn/index.aspx?worksid=10");
+}
+function click_link_5(){
+	 window.open("http://hd.cqjt.gov.cn/index.aspx?worksid=2218");
+}
+
+</script>
+<!--header End-->
+<div class="content">
+    <!--partA Start-->
+    <div class="partA clearfix">
+        <div class="btnList">
+            <a href="/leaders/0A6DAEA3B6ED4A19A204F4FE58F0492A_1.html"
+            
+               target="_blank" class="left_t_w1"
+               onMouseOver="this.className='left_t_w_1';"
+               onMouseOut="this.className='left_t_w1';"></a> <a class="left_t_w2"
+                                                                href="/openCatalog/init_/openCatalog/f1e8c2db-9e92-4a1e-a1cb-48569fa7f308.html"
+                                                                target="_blank"
+                                                                onMouseOver="this.className='left_t_w_2';"
+                                                                onMouseOut="this.className='left_t_w2';"></a> <a
+                href="/organizations/f2b5e16f-e81c-41ef-8c1d-c1a0d230c552.html"
+                target="_blank" class="left_t_w3"
+                onMouseOver="this.className='left_t_w_3';"
+                onMouseOut="this.className='left_t_w3';"></a> <a
+                href="/organizations/362ee30c-e337-4dea-afe8-2bba8a23435b.html"
+                target="_blank" class="left_t_w4"
+                onMouseOver="this.className='left_t_w_4';"
+                onMouseOut="this.className='left_t_w4';"></a>
+        </div>
+        <div class="newsList">
+            <dl class="tab clearfix">
+                <dt style="margin-left: 15px;color:red;display:none;" class="19da">贯彻十九大</dt>
+                <dt class="cur">重庆交通信息sdf</dt>
+                <dt>全国交通信息</dt>
+                <dt>国务院新闻</dt>
+
+                <!-- 					<dd class="more"> -->
+                <!-- 						<a target="_blank" -->
+                
+                
+                <!-- 							width="37" height="11" border="0" style="margin-top: 10px;" /></a> -->
+                <!-- 					</dd> -->
+                <!-- 					<dd style="display: none;" class="more"> -->
+                <!-- 						<a target="_blank" href="http://www.mot.gov.cn/xinxilb/index.html"> -->
+                <!-- 						<a target="_blank" href="http://www.mot.gov.cn/difangxinwen/xxlb_fabu/index.html"> -->
+                
+                <!-- 						</a> -->
+                <!-- 					</dd> -->
+                <!-- 					<dd style="display: none;" class="more"> -->
+                <!-- 						<a target="_blank" href="http://www.cq.gov.cn/gwywj/default_1.shtml"> -->
+                
+                <!-- 						</a> -->
+                <!-- 					</dd> -->
+                <!-- 					<dd style="display: none;" class="more"> -->
+                
+                
+                <!-- 						</a> -->
+                <!-- 					</dd> -->
+            </dl>
+            <!--tabCon Start-->
+            <div class="tabCon newsList_index" style="display: none;">
+                <dl></dl>
+                <a style="float: right;bottom: 0px" target="_blank"
+                   href="/articleList2/01010101_1.html">
+                    <img src="/images/gengduo.gif"
+                         width="37" height="11" border="0"/>
+                </a>
+            </div>
+            <div class="tabCon newsList_index">
+                <dl><dt style="margin-bottom: 10px;"><a target="_blank" title="【智博会】智能化应用与高品质生活高端论坛之智慧交通分论坛举行 未来智慧交通将构建“四个一”" href="articles/010101/2977ebf9-77c9-4785-9935-394a28abfb06.html">【智博会】智能化应用与高品质生活高端论坛之智慧交通分论坛举行 未来智慧交通将构建“四个一”</a></dt><dd><a target="_blank" title="重庆机场上半年航班放行正常率达88.73%"  href="articles/010101/89f2b3be-e83a-4201-9fcf-525519b55f77.html">重庆机场上半年航班放行正常率达88.73%</a></dd><dd><a target="_blank" title="【智博会】智博会期间 国博中心区域实现出租车行业“零”投诉"  href="articles/010101/8288f170-8dd8-4288-924b-79350538dd61.html">【智博会】智博会期间 国博中心区域实现出租车行业“零”投诉</a></dd><dt style="margin-bottom: 10px;"><a target="_blank" title="“安心乘车”微信小程序上线试运行 乘出租车更安全" href="articles/010101/8a2b0bb5-04ee-4cce-bb93-d3bcba5cd2d8.html">“安心乘车”微信小程序上线试运行 乘出租车更安全</a></dt><dd><a target="_blank" title="【智博会】交通开投集团圆满完成智博会公共交通运输保障任务"  href="articles/010101/fe62643b-8ae9-48a4-a136-b57fe8cbda6f.html">【智博会】交通开投集团圆满完成智博会公共交通运输保障任务</a></dd><dd><a target="_blank" title="高速集团与中国交通通信信息中心签订战略合作框架协议"  href="articles/010101/86ef4515-5261-47ce-918c-517aa1476e40.html">高速集团与中国交通通信信息中心签订战略合作框架协议</a></dd></dl>
+                <a style="float: right;bottom: 0px" target="_blank"
+                   href="/articleList/010101_1.html">
+                    <img src="/images/gengduo.gif"
+                         width="37" height="11" border="0"/>
+                </a>
+            </div>
+
+            <div class="tabCon newsList_index" style="display: none;">
+                <dl style="margin-top: 10px;" id="nationwideNews"></dl>
+                <a style="float: right;" target="_blank" href="http://www.mot.gov.cn/difangxinwen/xxlb_fabu/index.html">
+                    <img src="/images/gengduo.gif" width="37" height="11" border="0"
+                         style="margin-top: 10px;"/>
+                </a>
+            </div>
+
+            <div class="tabCon newsList_index" style="display: none;">
+                <dl style="margin-top: 10px;" id="stateCouncilInfo"></dl>
+                <a style="float: right;" target="_blank" href="http://www.gov.cn/">
+                    <img src="/images/gengduo.gif" width="37" height="11" border="0"
+                         style="margin-top: 10px;"/>
+                </a>
+            </div>
+
+            <div class="tabCon newsList_index" style="display: none;">
+                <dl style="margin-top: 10px;" id="govDocumentToId"></dl>
+                <a style="float: right;" target="_blank"
+                   href="/govDocument.do?action=jumpToGocDocumentList">
+                    <img src="/images/gengduo.gif" width="37" height="11" border="0"
+                         style="margin-top: 10px;"/>
+                </a>
+            </div>
+            <!--tabCon End-->
+        </div>
+        <!--newsList End-->
+        
+
+        <div class="focusBox" style="margin: 0">
+            <ul class="pic"
+                style="position: relative; width: 340px; height: 262px;">
+                
+                    
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/2977ebf9-77c9-4785-9935-394a28abfb06.html">
+                            <img src="http://www.cqjt.gov.cn:8080/resource/textnews/20180827/29521535334802010.jpg" alt="【智博会】智能化应用与高品质生活高端论坛之智慧交通分论坛举行 未来智慧交通将构建“四个一”"/>
+                        </a></li>
+                    
+                
+                    
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/8a2b0bb5-04ee-4cce-bb93-d3bcba5cd2d8.html">
+                            <img src="http://www.cqjt.gov.cn:8080/resource/textnews/20180827/20381535333878536.png" alt="“安心乘车”微信小程序上线试运行 乘出租车更安全"/>
+                        </a></li>
+                    
+                
+                    
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/bd132292-73d7-4de3-bbae-b30a28196fed.html">
+                            <img src="http://www.cqjt.gov.cn:8080/resource/textnews/20180822/81081534905548202.JPG" alt="【智博会】主城2000辆巡游出租汽车妆扮就绪，恭迎智博会"/>
+                        </a></li>
+                    
+                
+                    
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/13522f05-201d-4f4d-8b34-a3ff80fbd87e.html">
+                            <img src="http://www.cqjt.gov.cn:8080/resource/textnews/20180810/7871533903626662.jpg" alt="重庆交通网站期刊高速公路建设三年行动宣传通联会召开"/>
+                        </a></li>
+                    
+                
+                    
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/63ef70f6-de11-42d8-9034-2ffc586617fa.html">
+                            <img src="http://www.cqjt.gov.cn:8080/resource/textnews/20180802/91721533189877481.jpg" alt="石柱县公路“贴缝”专项养护技能竞赛举行"/>
+                        </a></li>
+                    
+                
+            </ul>
+            <div class="txt-bg"></div>
+            <div class="txt">
+                <ul>
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/2977ebf9-77c9-4785-9935-394a28abfb06.html">
+                                【智博会】智能化应用与高品质生活高端论坛之智慧交通分论坛举行 未来智慧交通将构建“四个一” </a></li>
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/8a2b0bb5-04ee-4cce-bb93-d3bcba5cd2d8.html">
+                                “安心乘车”微信小程序上线试运行 乘出租车更安全 </a></li>
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/bd132292-73d7-4de3-bbae-b30a28196fed.html">
+                                【智博会】主城2000辆巡游出租汽车妆扮就绪，恭迎智博会 </a></li>
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/13522f05-201d-4f4d-8b34-a3ff80fbd87e.html">
+                                重庆交通网站期刊高速公路建设三年行动宣传通联会召开 </a></li>
+                    
+                        <li><a target="_blank"
+                               href="/articles/010101/63ef70f6-de11-42d8-9034-2ffc586617fa.html">
+                                石柱县公路“贴缝”专项养护技能竞赛举行 </a></li>
+                    
+
+                </ul>
+            </div>
+            <ul class="num">
+                
+                    <li class=""><a>1</a><span></span></li>
+                
+                    <li class=""><a>2</a><span></span></li>
+                
+                    <li class=""><a>3</a><span></span></li>
+                
+                    <li class=""><a>4</a><span></span></li>
+                
+                    <li class=""><a>5</a><span></span></li>
+                
+            </ul>
+        </div>
+
+
+        <!--myFocus End-->
+    </div>
+    <!--partA End-->
+
+    
+        <div class="part banner"
+             style="width: 1024px; height: 60px; overflow: hidden;margin-top: 10px;">
+            <iframe scrolling="no" width="1024px" height="60px" frameborder="0"
+                    id="subjectFrame" name="subjectFrame" src="" class="bannerImg"></iframe>
+        </div>
+    
+
+    <!--part_gzcx Start-->
+    <div class="part part_gzcx">
+        <h2 class="title">
+            <a href="http://cx.cqjt.gov.cn/main.html" target="_blank"> <img
+                    src="/images/hongquan.png"
+                    style="float: left;"/><span style="float: left; color: #0074b6;">出行服务</span></a>
+        </h2>
+        <div class="con clearfix" id="part_gzcxCon">
+            <!--gzcx_L Start-->
+            <div class="gzcx_L">
+                <!--column01 出行规划 Start-->
+                <div class="column">
+                    <h2>
+                        <img src="/images/chuxingjihua.jpg" width="238" height="35"
+                             border="0"/>
+                    </h2>
+                    <div class="column-con" style="text-align: center;">
+                        <!--
+                        <iframe id="lxcx"
+                            style="width: 230px; height: 152px; background-color: transparent; overflow: hidden;"
+                            frameborder="0" scrolling="no" src=""></iframe>
+                             -->
+                        <ul>
+                            <li>
+                                <label>出发地：</label>
+                                <input type="input" name="beginSite" id="beginSite" style="width: 150px;height: 21px;"/>
+                            </li>
+                            <li>
+                                <label>目的地：</label>
+                                <input type="input" name="endSite" id="endSite" style="width: 150px;height: 21px;"/>
+                            </li>
+
+                            <li>
+                                <label></label>
+                                <a href="javascript:queryLk();" id="serchBtn" class="btn-login" width="155px"
+                                   height="29px">查&nbsp;&nbsp;询</a>
+                            </li>
+                            <li style="text-align: left;">
+                                <p>* 输入起点和终点进行沿途线路信息查询</p>
+                                <p>* 支持重庆范围内的规划</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--column01 End-->
+                <!--column02 Start-->
+                <div class="column mobileDownloads mb_0">
+                    <h2>
+                        <img
+                                src="/images/zhangshangjiao.png"
+                                width="238" height="35" border="0"/>
+                    </h2>
+                    <div class="column-con">
+                        <ul>
+                            <li onclick="locationHref()" style="cursor: pointer;">
+                                <img src="/images/Android.png"/>
+                                <span>重庆交通APP</span>
+                            </li>
+                            <li><img
+                                    src="/images/ticket.png"/>
+                                <span>联网售票</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <!--column02 End-->
+            </div>
+            <!--gzcx_L End-->
+
+            <!--gzcx_M Start-->
+            <div class="gzcx_M">
+                <ul class="tabs">
+                    <li class="active"><a href="javascript:;">路况信息</a></li>
+                    <li><a href="javascript:;">国省干道</a></li>
+                    <li><a target="_blank"
+                           href="http://cx.cqjt.gov.cn/cjcx/intercitybus.html?type=default">客运班车</a></li>
+                    <li><a target="_blank"
+                           href="http://cx.cqjt.gov.cn/cjcx/train.html?type=default">火车时刻</a></li>
+                    <li class="last"><a target="_blank"
+                                        href="http://cx.cqjt.gov.cn/cjcx/flight.html?type=leave">航空动态</a></li>
+                </ul>
+                <!--tabCon Start-->
+                <div class="tabCon">
+                    <!--tabPane01 Start-->
+                    <div class="tabPane active">
+                        <div class="scrollList" style="height: 300px; overflow: hidden;">
+                            <ul id="roadCondition">
+                            </ul>
+                        </div>
+                        <div
+                                style="padding-left: 410px; height: 20px; line-height: 20px; margin-top: 5px;">
+                            <a href="http://cx.cqjt.gov.cn/zjcx/main.html?loader=control"
+                               target="_blank"><img
+                                    src="/images/gengduo.gif"
+                                    width="37" height="11" border="0"/></a>
+                        </div>
+                    </div>
+                    <!--tabPane01 End-->
+                    <!--tabPane02 Start-->
+                    <div class="tabPane">
+                        <div class="scrollListGSGD" style="height: 300px; overflow: hidden;">
+                            <ul id="roadConditionGSGD">
+                            </ul>
+                        </div>
+                    </div>
+                    <!--tabPane02  End-->
+                </div>
+                <!--tabCon End-->
+            </div>
+            <!--gzcx_M End-->
+            <!--gzcx_R End-->
+            <!-- 要放大显示的div -->
+            <div class=" gzcx_R sideLink" id="gallery">
+
+                <a href="/images/weixin_traffic.jpg"
+                   title="重庆交通  微信" class="i_tl1"
+                   onMouseOver="this.className='i_tl1_';"
+                   onMouseOut="this.className='i_tl1';">
+                    <img src="/images/weixin_traffic.jpg" alt=""
+                         title="请扫描二维码关注重庆交通微信公众号" style="display: none"/>
+                </a>
+
+                <a href="http://e.weibo.com/u/2464831845?ref=http%3A%2F%2Fwww.cqjt.gov.cn%2FTLimages%2Fgbtop.html"
+                   target="_blank" title="@重庆交通  新浪" class="i_tl2"
+                   onMouseOver="this.className='i_tl2_';"
+                   onMouseOut="this.className='i_tl2';" data-poptrox="ignore"></a>
+
+                <a href="http://e.t.qq.com/cqjiaowei" target="_blank" style="display: none"
+                   title="@重庆交通  腾讯" class="i_tl3"
+                   onMouseOver="this.className='i_tl3_';"
+                   onMouseOut="this.className='i_tl3';" data-poptrox="ignore"></a>
+
+                <a href="http://cx.cqjt.gov.cn/bmfw/online.html"
+                   title="重庆交通服务热线" class="i_tl4"
+                   onMouseOver="this.className='i_tl4_';"
+                   onMouseOut="this.className='i_tl4';" data-poptrox="ignore"></a>
+                <a
+                        href="http://www.fm955.com.cn/" target="_blank" title="重庆交通广播"
+                        class="i_tl5" onMouseOver="this.className='i_tl5_';"
+                        onMouseOut="this.className='i_tl5';" data-poptrox="ignore"></a>
+
+            </div>
+            <a  href="http://toupiao.www.gov.cn/100dudian/index.htm" target="_blank" title="群众办事百项堵点疏解行动" style="display: block;float: left;padding-left: 1px;"
+            >
+                <img src="/images/index_100du.png" alt=""
+                     style="width: 260px;"
+                />
+
+            </a>
+            <!--gzcx_R End-->
+        </div>
+    </div>
+    <!--part_gzcx End
+            <!--办事服务 Start-->
+    <div class="part part_gzcx">
+        <h2 class="title">
+            <a> <img
+                    src="/images/hongquan.png"
+                    style="float: left;"/><span style="float: left; color: #0074b6;">办事服务</span></a>
+        </h2>
+        <div class="con clearfix">
+            <!--自助服务 start-->
+            <div class="gzcx_L" id="self_panel">
+                <div class="column">
+                    <h2>
+                        <img src="/images/dothing_back.png" width="238" height="35"
+                             border="0"/>
+                        <span style="position: relative;    top: -35px;left: 25px; color: #0074b6;">办事服务</span></a>
+                    </h2>
+                    <div class="column-con" style="text-align: center;">
+                        <!--
+                        <iframe id="lxcx"
+                            style="width: 230px; height: 152px; background-color: transparent; overflow: hidden;"
+                            frameborder="0" scrolling="no" src=""></iframe>
+                             -->
+                        <div class=" sideLink" id="self">
+
+                            <a href="http://cx.cqjt.gov.cn/bmfw/onlineFillForm.html?sjzt=%E9%97%AE%E4%BA%8B"
+                               title="问事" class="self_a index_ask"
+                            >
+                                <img src="/images/index_ask.png" class="ask_img"/>
+                            </a>
+
+                            <a href="http://cx.cqjt.gov.cn/bmfw/onlineFillForm.html?sjzt=%E6%8A%95%E8%AF%89"
+                               title="投诉" class="self_a index_ask"
+                            >
+                                <img src="/images/index_cpt.png" class="ask_img"/>
+                            </a>
+                            <a href="http://cx.cqjt.gov.cn/bmfw/onlineFillForm.html?sjzt=%E6%8A%A5%E8%AD%A6"
+                               title="报警" class="self_a index_ask"
+                            >
+                                <img src="/images/index_police.png" class="ask_img"/>
+                            </a>
+
+
+                        </div>
+                    </div>
+                </div>
+                <!--column01 End-->
+
+            </div>
+            <!--自助服务 End-->
+
+            <!--gzcx_M Start-->
+            <div class="gzcx_M" style="width: 396px;margin: 0px;">
+                <ul class="tabs">
+                    <li class="active"><a href="javascript:;">查询服务</a></li>
+                    <li><a href="javascript:;">公告公示</a></li>
+
+                </ul>
+                <!--tabCon Start-->
+                <div class="tabCon" style="height: auto">
+                    <!--tabPane01 Start-->
+                    <div class="tabPane active">
+                        <div class="scrollList" style="height: 170px; overflow: hidden;">
+                            <ul id="queryList">
+                                <li><a target="_blank"
+                                       href="http://zwfw.cq.gov.cn/icity/govservice/queryprogress?i=3"><b
+                                        class="dot"></b>行政许可办理查询</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet//integrate/integrate!listTrroademploye.do"><b
+                                        class="dot"></b>公路水运工程从业人员查询</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet//integrate/integrate!listQyxx.do"><b
+                                        class="dot"></b>公路建设市场从业单位信息查询</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet//integrate/integrate!listXmxx.do"><b
+                                        class="dot"></b>公路建设市场项目信息查询</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet//integrate/integrate!listUnitview.do"><b
+                                        class="dot"></b>水运建设市场从业单位信息查询</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet//integrate/integrate!listProjectview.do"><b
+                                        class="dot"></b>水运建设市场项目信息查询</a></li>
+                            </ul>
+                        </div>
+                        <div
+                                style="padding-left: 350px; height: 20px; line-height: 20px; margin-top: 5px;">
+                            <a href="http://bs.cqjt.gov.cn:8000/cqnet/page/web/homePage.jsp?type=3"
+                               target="_blank"><img
+                                    src="/images/gengduo.gif"
+                                    width="37" height="11" border="0"/></a>
+                        </div>
+                    </div>
+                    <div class="tabPane">
+                        <div class="scrollList" style="height: 170px; overflow: hidden;">
+
+                            <ul id="publicinfo">
+
+                                <li><a target="_blank" href="http://zwfw.cq.gov.cn/icity/icity/bjgg?i=4"><b
+                                        class="dot"></b>行政许可结果公示</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet/web/webdashboard!powerDashboardnew.do?orgId=500000ZF&itemType=CF"><b
+                                        class="dot"></b>行政处罚裁量基准公示</a></li>
+                                <li><a target="_blank"
+                                       href="http://www.cqjt.gov.cn/openCatalog/init_/openCatalogList/01010902_1.html"><b
+                                        class="dot"></b>交通行业招标公告</a></li>
+                                <li><a target="_blank"
+                                       href="http://www.cqjt.gov.cn/openCatalog/init_/openCatalogList/01010903_1.html"><b
+                                        class="dot"></b>交通行业中标公告</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet/integrate/integrate!listQyxyxx.do"><b
+                                        class="dot"></b>公路建设市场信用信息管理系统市级评价</a></li>
+                                <li><a target="_blank"
+                                       href="http://bs.cqjt.gov.cn:8000/cqnet/integrate/integrate!listJcjlxx.do"><b
+                                        class="dot"></b>公路建设市场信用信息管理系统奖惩记录</a></li>
+                            </ul>
+                        </div>
+                        <div
+                                style="padding-left: 350px; height: 20px; line-height: 20px; margin-top: 5px;">
+                            <a href="http://bs.cqjt.gov.cn:8000/cqnet/page/web/homePage.jsp"
+                               target="_blank"><img
+                                    src="/images/gengduo.gif"
+                                    width="37" height="11" border="0"/></a>
+                        </div>
+                    </div>
+                    <!--tabPane01 End-->
+                    <!--tabPane02 Start-->
+
+                    <!--tabPane02  End-->
+                </div>
+                <!--tabCon End-->
+            </div>
+            <!--gzcx_M End-->
+            <!--gzcx_R End-->
+            <div class="focusBox" style="margin: 0;height: 234px;margin-right: 10px;">
+                <ul class="tabs" style="height: 33px;background: url(null/images/titl_32.png) 0 0 repeat-x;border: none;">
+                    <li class="peopleService inherit" style="float: left">便民服务</li>
+                    <li class="peopleService inherit" style="float: right"><a
+                            href="http://cx.cqjt.gov.cn/bmfw/card.html" target="_blank" style="color:#046598;">更多></a>
+                    </li>
+                </ul>
+                <ul class="pic"
+                    style="position: relative; width: 340px; height: 262px;">
+                    <li><a target="_blank"
+                           href="http://cx.cqjt.gov.cn/bmfw/queryAllLostInfo.html">
+                        <img src="/images/index_lost.png" style="height: 200px; "/>
+                    </a></li>
+                    <li><a target="_blank"
+                           href="http://cx.cqjt.gov.cn/bmfw/card.html">
+                        <img src="/images/index_card.png" style="height: 200px; "/>
+                    </a></li>
+                    <li><a target="_blank"
+                           href="http://cx.cqjt.gov.cn/bmfw/etc.html">
+                        <img src="/images/index_etc.png" style="height: 200px; "/>
+                    </a></li>
+                </ul>
+
+                <ul class="num">
+                    <li class=""><a>1</a><span></span></li>
+                    <li class=""><a>2</a><span></span></li>
+                    <li class=""><a>3</a><span></span></li>
+
+                </ul>
+            </div>
+
+
+            <!--gzcx_R End-->
+
+            <div class="bs_bottom">
+                <div class="dothings ">
+                    <ul class="tabs"
+                        style="height: 33px;background: url(null/images/titl_32.png) 0 0 repeat-x;border: none;">
+                        <li class="peopleService inherit" style="float: left">办事指南</li>
+                        <li class="peopleService inherit" style="float: right"><a target="_blank" href="http://zwfw.cq.gov.cn/icity/govservice/portal?id=5000000080"
+                                                                                  style="color:#046598;">更多></a></li>
+                        <div class="things_table">
+                            <div class="things_link">
+                                <div class="things_row">
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=F5072E8DEF82483197E61A12D4E7E2F4">船舶图纸审查</a>
+                                    </div>
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=F19C06B2F1EE4B3BB1BA41CC1D1F289A">船用产品检验</a>
+                                    </div>
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=A7818B0A10344EDEAB311D82C4481340">内河交通安全检查</a>
+                                    </div>
+                                </div>
+                                <div class="things_row">
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=F5072E8DEF82483197E61A12D4E7E2F4">高速公路路政许可</a>
+                                    </div>
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=0A6A7A31C4FA462D879BFA3701639CA3">国际道路运输经营许可</a>
+                                    </div>
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=418F47B8587B466D99D29D2A5A26D1E3">船舶焊工资格证书核发</a>
+                                    </div>
+                                </div>
+                                <div class="things_row">
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=BE1FA38F68164210836811A5108CA62E">非法营运有奖举报</a>
+                                    </div>
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=53451BEFD7A0483491153D2588983036">港口费征收</a>
+                                    </div>
+                                    <div class="things_cell">
+                                        <a target="_blank" style="color:#3e92c5;"
+                                           href="http://zwfw.cq.gov.cn/icity/icity/proinfo?id=8FD70A441F9B47ECB104F5329CFAD9C4">公路赔补偿费收取</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+                <div class="opendata">
+                    <ul class="tabs"
+                        style="height: 33px;background: url(null/images/titl_32.png) 0 0 repeat-x;border: none;">
+                        <li class="peopleService inherit" style="float: left">数据开放</li>
+                        <li class="peopleService inherit" style="float: right"><a target="_blank"
+                                                                                  href="/publicData.jsp"
+                                                                                  style="color:#046598;">更多></a></li>
+                    </ul>
+                    <div style="overflow: hidden;" id="public_table">
+                        
+                    </div>
+                </div>
+                <div style="clear: both"></div>
+            </div>
+        </div>
+
+    </div>
+    <!--办事服务 End
+
+		
+			<div class="part banner"
+				style="width: 1024px; height: 60px; overflow: hidden;">
+				<iframe scrolling="no" width="1024px" height="60px" frameborder="0"
+					id="subjectFrame" name="subjectFrame" src="" class="bannerImg"></iframe>
+			</div>
+		
+		part_wsbs Start-->
+    <div class="part part_wsbs" style="display: none;">
+        <div style="padding: 0; margin: 0; height: 43px;">
+            <a href="http://bs.cqjt.gov.cn:8000/cqnet/page/web/homePage.jsp"
+               target="_blank"> <img
+                    src="/images/wangshangbanshi.jpg"
+                    width="1024" height="43" border="0"/></a>
+        </div>
+        <iframe id="wsbs" src="" style="width: 1024px; height: 278px;"
+                scrolling="no" frameborder="0"></iframe>
+    </div>
+    <!--part_wsbs End-->
+    <!--part_hdjl Start-->
+    <div class="part part_hdjl">
+        <div style="padding: 0; margin: 0; height: 43px;">
+            <img
+                    src="/images/hudongjiaoliu.jpg"
+                    width="1024" height="43" border="0"/>
+        </div>
+        <div class="con clearfix">
+            <div class="hdjl_R clearfix">
+                <div class="subSection" id="sendIdea">
+                    <div
+                            style="float: left; width: 150px; height: 40px; line-height: 20px; padding: 40px 0 0 90px;">
+                        <div style="height: 100%;overflow: hidden;"><a target="_blank"
+                                                                       href="/topics/6175b60f-072a-4405-8f46-ae7682d3db0c.html">我为大督查提建议</a>
+                        </div>
+                    </div>
+                    <a target="_blank"
+                       href="/topics/list_1.html"
+                       style="float: right; padding-right: 20px; padding-top: 3px; color: #306297;">更多</a>
+                </div>
+                <div class="subSection">
+                    <div
+                            style="float: left; width: 150px; height: 40px; line-height: 20px; padding: 48px 0 0 90px;">
+                        <!-- <a target="_blank"
+								href="/questionaires/4F150E757B8B4CA98F2B94320154F0B0.html">“群众办事百项堵点疏解行动”第五季</a>
+								 -->
+                        <a target="_blank"
+                           href="/Questionaire.do?action=questionList&QTEID=4F150E757B8B4CA98F2B94320154F0B0">“群众办事百项堵点疏解行动”第五季</a>
+                    </div>
+                    <a target="_blank"
+                       href="/questionaires/list_1.html"
+                       style="float: right; padding-right: 20px; padding-top: 3px; color: #306297;">更多</a>
+                </div>
+            </div>
+            <!--hdjl_L Start
+				<div class="hdjl_L subSection">
+					<h3 class="title">
+						<span>最近访谈</span>
+					</h3>
+					
+<div class="subCon">
+	<img src="http://www.cqjt.gov.cn:8080/resource\interviewonline\201808\1534902949737617655.jpg" class="photo_onlineInterview">
+	<h4 style="height: 35px; overflow: hidden;" title="​万州建好“四好农村路”  提升城乡交通水平和服务能力" id="interviewTitle">
+		<b>主题：</b>​万州建好“四好农村路”  提升城乡交通水平和服务能力
+	</h4>
+	<ul>
+		<li><b>时间：</b>2018.8.22</li>
+		<li><b>嘉宾：</b>​万州区交通委员会主任杨晓峰</li>
+		<li class="summary"><b class="titleName">摘要：</b>
+			<div class="overflowHidden" title="近年来，万州区加大资金投入，统筹整合交通、扶贫、对口支援、三峡后续等专项资金以及区级财政涉农资金近7亿元，实施农村公路硬化1543公里。截至目前，全区农村公路里程达9773公里，其中村组公路8440公里、县乡道1333公里。全区52个乡镇街道，448个行政村通畅率和609个撤并村通达率均达到100%，基本形成“村村相连，镇镇相通”的区域路网结构，有效的缓解了群众出行难、农产品运输难问题，助推镇乡产业发展升级，有力的促进了农村经济社会发展，真正成为了广大农民群众的致富路、小康路。" id = "interviewSummary">近年来，万州区加大资金投入，统筹整合交通、扶贫、对口支援、三峡后续等专项资金以及区级财政涉农资金近7亿元，实施农村公路硬化1543公里。截至目前，全区农村公路里程达9773公里，其中村组公路8440公里、县乡道1333公里。全区52个乡镇街道，448个行政村通畅率和609个撤并村通达率均达到100%，基本形成“村村相连，镇镇相通”的区域路网结构，有效的缓解了群众出行难、农产品运输难问题，助推镇乡产业发展升级，有力的促进了农村经济社会发展，真正成为了广大农民群众的致富路、小康路。</div>
+			<div style="clear: both; height: 0;"></div></li>
+	</ul>
+	<div style="margin-top: 0px;">
+		<a target="_blank"  href="/interviews/6d4e652669a34199a468420fe664a082.html">
+			<img src="/images/jinru.png" width="76" height="19" border="0">
+		</a>
+		<a target="_blank" href="/interviewsplan/6d4e652669a34199a468420fe664a082.html" style="margin-left: 10px">
+			<img src="/images/jinru3.png" width="76" height="19" border="0">
+		</a> 
+		<a href="/interviews/list_1.html" target="_blank" style="float: right;margin-top: 4px;">
+			<img src="/images/gengduo.gif" width="37" height="11" border="0">
+		</a>
+
+
+	</div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	var title = '​万州建好“四好农村路”  提升城乡交通水平和服务能力';
+	var summary = '近年来，万州区加大资金投入，统筹整合交通、扶贫、对口支援、三峡后续等专项资金以及区级财政涉农资金近7亿元，实施农村公路硬化1543公里。截至目前，全区农村公路里程达9773公里，其中村组公路8440公里、县乡道1333公里。全区52个乡镇街道，448个行政村通畅率和609个撤并村通达率均达到100%，基本形成“村村相连，镇镇相通”的区域路网结构，有效的缓解了群众出行难、农产品运输难问题，助推镇乡产业发展升级，有力的促进了农村经济社会发展，真正成为了广大农民群众的致富路、小康路。';
+	if(title != null && title.length>=13){
+// 		var str= title.substring(0,12)+" . . .";
+// 		$("#interviewTitle").html("<b>主题：</b>"+str);
+	}
+	if(summary != null && summary.length>=70){
+		var str=summary.substring(0,70)+" . . .";
+		$("#interviewSummary").html(str);
+	}
+	/**
+	//alert("浏览器:"+navigator.userAgent);
+	if ((navigator.userAgent.indexOf('MSIE') >= 0) && (navigator.userAgent.indexOf('Opera') < 0)){
+			//IE
+			//alert('你是使用IE')
+		}
+	else
+	    if (navigator.userAgent.indexOf('Firefox') >= 0){
+			//火狐浏览器
+			$("#goToMore").css("margin-top","-3px");
+			//alert("火狐!");
+	    }else
+	        if (navigator.userAgent.indexOf('Opera') >= 0){
+				//opera浏览器
+	        	$("#goToMore").css("margin-top","5px");
+	        }else{
+	    	//其他浏览器	    
+	        	$("#goToMore").css("margin-top","5px");
+		}*/
+});
+</script>
+
+				</div>-->
+
+            <div class="interview">
+                <dl class="tab_i clearfix ">
+                    <dt class="cur_i" style="margin-left: 15px;">重庆交通访谈</dt>
+                    <dt>市政府访谈</dt>
+
+
+                </dl>
+                <!--tabCon_01 Start-->
+                <div class="tabCon ">
+                    <dl>
+                        
+<div class="subCon">
+	<img src="http://www.cqjt.gov.cn:8080/resource\interviewonline\201808\1534902949737617655.jpg" class="photo_onlineInterview">
+	<h4 style="height: 35px; overflow: hidden;" title="​万州建好“四好农村路”  提升城乡交通水平和服务能力" id="interviewTitle">
+		<b>主题：</b>​万州建好“四好农村路”  提升城乡交通水平和服务能力
+	</h4>
+	<ul>
+		<li><b>时间：</b>2018.8.22</li>
+		<li><b>嘉宾：</b>​万州区交通委员会主任杨晓峰</li>
+		<li class="summary"><b class="titleName">摘要：</b>
+			<div class="overflowHidden" title="近年来，万州区加大资金投入，统筹整合交通、扶贫、对口支援、三峡后续等专项资金以及区级财政涉农资金近7亿元，实施农村公路硬化1543公里。截至目前，全区农村公路里程达9773公里，其中村组公路8440公里、县乡道1333公里。全区52个乡镇街道，448个行政村通畅率和609个撤并村通达率均达到100%，基本形成“村村相连，镇镇相通”的区域路网结构，有效的缓解了群众出行难、农产品运输难问题，助推镇乡产业发展升级，有力的促进了农村经济社会发展，真正成为了广大农民群众的致富路、小康路。" id = "interviewSummary">近年来，万州区加大资金投入，统筹整合交通、扶贫、对口支援、三峡后续等专项资金以及区级财政涉农资金近7亿元，实施农村公路硬化1543公里。截至目前，全区农村公路里程达9773公里，其中村组公路8440公里、县乡道1333公里。全区52个乡镇街道，448个行政村通畅率和609个撤并村通达率均达到100%，基本形成“村村相连，镇镇相通”的区域路网结构，有效的缓解了群众出行难、农产品运输难问题，助推镇乡产业发展升级，有力的促进了农村经济社会发展，真正成为了广大农民群众的致富路、小康路。</div>
+			<div style="clear: both; height: 0;"></div></li>
+	</ul>
+	<div style="margin-top: 0px;">
+		<a target="_blank"  href="/interviews/6d4e652669a34199a468420fe664a082.html">
+			<img src="/images/jinru.png" width="76" height="19" border="0">
+		</a>
+		<a target="_blank" href="/interviewsplan/6d4e652669a34199a468420fe664a082.html" style="margin-left: 10px">
+			<img src="/images/jinru3.png" width="76" height="19" border="0">
+		</a> 
+		<a href="/interviews/list_1.html" target="_blank" style="float: right;margin-top: 4px;">
+			<img src="/images/gengduo.gif" width="37" height="11" border="0">
+		</a>
+
+
+	</div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	
+	var title = '​万州建好“四好农村路”  提升城乡交通水平和服务能力';
+	var summary = '近年来，万州区加大资金投入，统筹整合交通、扶贫、对口支援、三峡后续等专项资金以及区级财政涉农资金近7亿元，实施农村公路硬化1543公里。截至目前，全区农村公路里程达9773公里，其中村组公路8440公里、县乡道1333公里。全区52个乡镇街道，448个行政村通畅率和609个撤并村通达率均达到100%，基本形成“村村相连，镇镇相通”的区域路网结构，有效的缓解了群众出行难、农产品运输难问题，助推镇乡产业发展升级，有力的促进了农村经济社会发展，真正成为了广大农民群众的致富路、小康路。';
+	if(title != null && title.length>=13){
+// 		var str= title.substring(0,12)+" . . .";
+// 		$("#interviewTitle").html("<b>主题：</b>"+str);
+	}
+	if(summary != null && summary.length>=70){
+		var str=summary.substring(0,70)+" . . .";
+		$("#interviewSummary").html(str);
+	}
+	/**
+	//alert("浏览器:"+navigator.userAgent);
+	if ((navigator.userAgent.indexOf('MSIE') >= 0) && (navigator.userAgent.indexOf('Opera') < 0)){
+			//IE
+			//alert('你是使用IE')
+		}
+	else
+	    if (navigator.userAgent.indexOf('Firefox') >= 0){
+			//火狐浏览器
+			$("#goToMore").css("margin-top","-3px");
+			//alert("火狐!");
+	    }else
+	        if (navigator.userAgent.indexOf('Opera') >= 0){
+				//opera浏览器
+	        	$("#goToMore").css("margin-top","5px");
+	        }else{
+	    	//其他浏览器	    
+	        	$("#goToMore").css("margin-top","5px");
+		}*/
+});
+</script>
+
+                    </dl>
+                </div>
+                <!--tabCon_01 End-->
+                <!--tabCon_02 Start-->
+                <div class="tabCon" style="display: none;">
+                    <dl style="margin-top: 10px;">
+                        <div class="subCon">
+                            <img src="http://www.cq.gov.cn/zxft/images/zxft.jpg" class="photo_onlineInterview">
+                            <h4 style="overflow: hidden;" title="主城区背街小巷市容环境整治及城市公共厕所建设">
+                                <b>主题：</b>主城区背街小巷市容环境整治及城市公共厕所建设
+                            </h4>
+                            <ul>
+                                <li><b>时间：</b>2015-6-15 15:00:00</li>
+
+                                <li><b>嘉宾：</b> 郑如彬 , 秦玉忠 , 罗 利</li>
+                                <li class="summary"><b class="titleName">摘要：</b>
+                                    <div class="overflowHidden" title="">
+                                        市委、市政府决定，2015年将集中力量办好事关群众切身利益的25件重点民生实事，“317个主城区背街小巷市容环境整治及362座城市公共厕所建设”是其中之一。
+                                    </div>
+                                    <div style="clear: both; height: 0;"></div>
+                                </li>
+                            </ul>
+                            <div>
+                                <a
+                                        href="http://cq.gov.cn/assistant-interview-webapp/upc/interviewList.action"
+                                        target="_blank" style="float: right;"><img
+                                        src="/images/gengduo.gif"
+                                        width="37" height="11" border="0"></a>
+                            </div>
+                        </div>
+                    </dl>
+                </div>
+                <!--tabCon_02 End-->
+            </div>
+
+
+            <!--hdjl_L End-->
+            <!--hdjl_M Start-->
+            <div class="hdjl_M  subSection">
+                <h3 class="title">
+                    <span>领导信箱</span>
+                </h3>
+                <div class="subCon">
+                    <ul id="mailList">
+                    </ul>
+                    <div
+                            style="padding-left: 300px; height: 13px; line-height: 13px; padding-top: 12px;">
+                        <a href="/mailbox.html"
+                           target="_blank"><img
+                                src="/images/gengduo.gif"
+                                width="37" height="11" border="0"/></a>
+                    </div>
+                </div>
+            </div>
+            <!--hdjl_M End-->
+        </div>
+    </div>
+    <!--part_hdjl End-->
+    <!--part_cywz Start-->
+    
+<!--partC Start-->
+<div class="part_cywz">
+	<div class="con clearfix" id="cywz">
+		<h2 class="title">
+			<img src="/images/hongquan.png"
+				style="float: left;"><Span
+				style="float: left; color: #0074b6;">友情链接</Span>
+			<ul class="tab">
+				<li class="active"><a href="javascript:;">委属单位</a></li>
+				<li><a href="javascript:;">区县交通网站</a></li>
+				<li><a href="javascript:;">各省(自治区、直辖市)交通运输主管部门</a></li>
+			<!--	<li><a href="javascript:;">相关交通网址</a></li> -->
+				<li><a href="javascript:;">专题专栏</a></li>
+				
+			</ul>
+		</h2>
+		<div class="tabCon tabCon_sjbm active">
+
+			<a target="_blank" title="公路局" href="http://www.cqgl.net">公路局</a> 
+			<a target="_blank" title="运管局" href="http://www.cqyg.net">运管局</a>
+		 	<a target="_blank" title="港航局" href="http://www.cqshipping.com">港航局</a>
+			<a target="_blank" title="交通行政执法总队" href="http://jtzf.cq.gov.cn">交通行政执法总队</a>
+			<a target="_blank" title="航交所" href="http://www.cse.net.cn">航运交易所</a>	
+			<!--<a target="_blank" title="重庆交通规划勘察设计院" href="http://ccpsdi.com">设计院</a>-->
+			<!--<a target="_blank" title="高速集团" href="http://cegc.com.cn/webui/default.aspx">重庆高速集团</a>-->
+			<!--<a target="_blank" title="重庆公交在线" href="http://www.cqgj.net/">公交集团</a>-->
+			<!--<a target="_blank" title="站场集团" href="http://www.cqzcjt.cn">重庆交通枢纽</a>-->
+			<!--<a target="_blank" title="重庆市公路学会" href="http://cqglxh.cqjt.gov.cn/">重庆市公路学会</a>-->
+			<!--<a target="_blank" title="市交委质监局" href="http://www.cqjtzjz.com:8096/pub/pageindex">市交委质监局</a>-->
+	            	<a href="http://www.cqjtgx.com/" class="last" target="_blank">重庆市交通干部学校</a>
+		</div>
+		<div class="tabCon" style="display: none;">
+		<!--<a href="http://www.wzjw.gov.cn/" target="_blank">万州区交通委员会</a>-->
+            	<!--<a href="http://www.fljw.gov.cn/" target="_blank">涪陵区交通委员会</a>-->
+            	<!--<a href="http://www.cqyz.gov.cn/qjjw/index.html" target="_blank">渝中区建设和交通委员会</a>-->
+<!--             	<a href="http://jb.cq.gov.cn/cqjbqjw/index.shtml" target="_blank">江北区交通委员会</a> -->
+<!--             	<a href="http://www.spbjt.com/" target="_blank">沙坪坝区交通委员会</a> -->
+<!--             	<a href="http://jw.beibei.gov.cn/" target="_blank">北碚区交通委员会</a> -->
+<!--            	<a href="http://www.cqybjt.gov.cn" target="_blank">渝北区交通委员会</a>-->
+            	<!--<a href="http://www.cqbnjt.gov.cn" target="_blank">巴南区交通委员会</a>-->
+            	<!--<a href="http://jt.cqcs.gov.cn/www/index/" target="_blank">长寿区交通委员会</a>-->
+            	<!-- <a href="http://www.cqjjjw.gov.cn/www/index/" target="_blank">江津区交通委员会</a> -->
+<!--             	<a href="http://www.cqhcjt.gov.cn" target="_blank">合川区交通委员会</a> -->
+<!--            	<a href="http://jtj.cqyc.gov.cn" target="_blank">永川区交通委员会</a>-->
+<!--             	<a href="http://www.ncjtj.gov.cn" target="_blank">南川区交通委员会</a> -->
+            	<a href="http://jtj.dazu.gov.cn" target="_blank">大足区交通委员会</a>
+
+<!--             	<a href="http://ws.cq.gov.cn/" target="_blank">万盛经济技术开发区交通局</a> -->
+            	<!--<a href="http://www.cnnz.gov.cn" target="_blank">北部新区交通局</a>-->
+
+            	<!--<a href="http://www.cqtnjw.gov.cn" target="_blank">潼南县交通委员会</a>-->
+            	<!--<a href="http://www.cqtljt.gov.cn" target="_blank">铜梁县交通委员会</a>-->
+<!--             	<a href="http://www.lpjt.gov.cn" target="_blank">梁平县交通委员会</a> -->
+            	<!--<a href="http://jt.ckgo.cn" target="_blank">城口县交通委员会</a>-->
+            	<!--<a href="http://fdxjtwyh.168mpw.com" target="_blank">丰都县交通委员会</a>-->
+            	<a href="http://djjt.cqsdj.gov.cn" target="_blank">垫江县交通委员会</a>
+            	<a href="http://wjt.cqwl.gov.cn/index" target="_blank">武隆县交通委员会</a>
+            	<!--<a href="http://jw.zhongxian.gov.cn" target="_blank">忠县交通委员会</a>-->
+            	<!--<a href="http://kxjt.gov.cn" target="_blank">开县交通委员会</a>-->
+            	<!--<a href="http://yy.cq.gov.cn" target="_blank">云阳县交通委员会</a>-->
+            	<!--<a href="http://fjjw.fengjiexian.com" target="_blank">奉节县交通委员会</a>-->
+            	<!--<a href="http://szxjtwyh.eduwsw.com" target="_blank">石柱土家族自治县交通委员会</a>-->
+            	<!--<a href="http://jjt.psx.gov.cn" class="last" target="_blank">彭水苗族土家族自治县交通委员会</a>-->
+		</div>
+		<div class="tabCon" style="display: none;">
+	            <a href="http://www.bjjtw.gov.cn/" target="_blank">北京市交通委员会</a>
+	            <a href="http://www.jt.sh.cn" target="_blank">上海市交通委员会</a>
+	            <a href="http://www.tjjt.gov.cn/" target="_blank">天津市交通运输和港口管理局</a>
+	            <a href="http://www.hbsjtt.gov.cn/" target="_blank">河北省交通厅</a>
+	            <a href="http://www.sxjt.gov.cn" target="_blank">山西省交通厅</a>
+	            <a href="http://www.nmjt.gov.cn/" target="_blank">内蒙古自治区交通厅</a>
+	            <a href="http://www.lncom.gov.cn" target="_blank">辽宁省交通厅</a>
+	            <a href="http://www.jljt.gov.cn/" target="_blank">吉林省交通厅</a>
+	            <a href="http://www.hljjt.gov.cn/" target="_blank">黑龙江省交通厅</a>
+	            <a href="http://www.jscd.gov.cn/" target="_blank">江苏省交通厅</a>
+	            <a href="http://www.zjt.gov.cn/" target="_blank">浙江省交通厅</a>
+	            <a href="http://www.ahjt.gov.cn/" target="_blank">安徽省交通厅</a>
+	            <a href="http://www.fjjt.gov.cn/" target="_blank">福建省交通厅</a>
+	            <a href="http://www.jxjt.gov.cn/" target="_blank">江西省交通厅</a>
+	            <a href="http://www.sdjt.gov.cn/" target="_blank">山东省交通厅</a>
+	            <a href="http://www.hncd.gov.cn" target="_blank">河南省交通厅</a>
+	            <a href="http://www.hbjt.gov.cn/" target="_blank">湖北省交通厅</a>
+	            <a href="http://www.hnjt.gov.cn/" target="_blank">湖南省交通厅</a>
+	            <a href="http://www.gdcd.gov.cn/" target="_blank">广东省交通厅</a>
+	            <!--<a href="http://www.gxdot.gov.cn/" target="_blank">广西壮族自治区交通厅</a>-->
+	            <a href="http://jtt.hinews.cn" target="_blank">海南省交通厅</a>
+	            <a href="http://www.scjt.gov.cn/" target="_blank">四川省交通厅</a>
+	            <a href="http://www.qjt.gov.cn/" target="_blank">贵州省交通厅</a>
+	            <a href="http://www.ynjtt.com/" target="_blank">云南省交通运输厅</a>
+	            <a href="http://www.xzjtt.gov.cn/" target="_blank">西藏自治区交通厅</a>
+	            <a href="http://www.sxsjtt.gov.cn/" target="_blank">陕西省交通厅</a>
+	            <a href="http://www.gsjt.gov.cn/" target="_blank">甘肃省交通厅</a>
+	            <a href="http://www.qhjt.gov.cn/" target="_blank">青海省交通厅</a>
+	            <a href="http://www.nxcd.gov.cn/" target="_blank">宁夏回族自治区交通厅</a>
+	            <a href="http://www.xjjt.gov.cn/" class="last" target="_blank">新疆维吾尔自治区交通厅</a>
+		</div>
+		<!--<div class="tabCon" style="display: none;">
+		     <a href="http://www.moc.gov.cn/">交通运输部</a> 
+		    <a href="http://www.mot.gov.cn/" target="_blank">交通运输部</a>
+		    <a href="http://www.cq.gov.cn" target="_blank">重庆市人民政府</a>
+	            <a href="http://www.zgjtb.com" target="_blank">中国交通新闻网</a>
+	            <a href="http://www.cngaosu.com" target="_blank">中国高速公路网</a>
+		    <a href="http://www.cqgj.net/" target="_blank">公交集团</a>
+		    <a href="http://www.cqmetro.cn/wwwroot_release/crtweb/index.shtml" target="_blank">轨道集团</a>
+	            <a href="http://www.cqzcjt.cn" target="_blank">枢纽集团</a>
+	            <a href="http://www.cqtransit.com" class="last" target="_blank">重庆交通运输控股集团</a>
+	            <a href="http://cqglxh.cqjt.gov.cn" class="last" target="_blank">重庆市公路学会</a>
+	            <a href="http://www.cqta.gov.cn" target="_blank">重庆市旅游局公众信息网</a>
+	            <a href="http://203.93.109.52:8088/gl" target="_blank">公路建设市场信用系统</a>
+	            <a href="http://www.jyhk.com" class="last" target="_blank">精英航空</a>
+	            <a href="http://www.cqgyzy.com/" target="_blank">重庆公共运输职业学院</a>
+		     rget="_blank" title="重庆市交运集团" href="http://www.cqtransit.com">重庆市交运集团</a> 
+		    <a target="_blank" title="重庆城市交通开发投资(集团)有限公司" href="http://www.cqjtkt.cn/">重庆城市交通开发投资(集团)有限公司</a>-->
+		</div>
+		<div class="tabCon" style="display: none;">
+			<!--<a target="_blank" title="新十年重庆交通委员会之十八大专题"
+				href="http://jwgzh.excel17.com">新十年重庆交通委员会之十八大专题</a>-->
+			<a target="_blank" title="重庆交通行业安全信息网"
+				href="http://aq.cqjt.gov.cn">重庆交通行业安全信息网</a>
+				 
+			<!--<a target="_blank" title="党的群众路线教育实践活动专栏"
+				href="http://cqjt718.excel17.com">党的群众路线教育实践活动专栏</a>
+			<a target="_blank" title="重庆交通节能网" href="http://cqjtjp.cqjt.gov.cn">重庆交通节能网</a> -->
+			
+				
+			<a target="_blank" title="重庆市公路建设市场信用信息管理系统"
+				href="http://203.93.109.52:8088/gl/">重庆市公路建设市场信用信息管理系统</a>
+                            <!--<a target="_blank" title="重庆市公路建设市场信用信息管理系统"
+				href="http://203.93.109.52:8088/gl">重庆市公路建设市场信用信息管理系统</a>-->
+			<!--<a target="_blank" title="美丽交通 魅力高铁”摄影赛" href="http://hd.cqjt.gov.cn/index.aspx?worksid=2">“美丽交通 魅力高铁”摄影赛</a>-->
+			<!--<a target="_blank" title="践行“三个坚持”论坛" href="http://hd.cqjt.gov.cn/index.aspx?worksid=16">践行“三个坚持”论坛</a>-->
+			<!--<a target="_blank" title="五年大跨越 交通梦想征文" href="http://hd.cqjt.gov.cn/index.aspx?worksid=10">五年大跨越 交通梦想征文</a>-->
+			<a target="_blank" title="交通年鉴"
+				href="http://www.cqjt.gov.cn/yearbookList.html">交通年鉴</a>
+<a target="_blank" title="业务报表系统"
+				href="http://203.93.109.55:8090">业务报表系统</a>
+
+		</div>
+	</div>
+</div>
+<!--partC End-->
+<!--content End-->
+    <!--part_cywz End-->
+    <!--footer Start-->
+    
+<div class="footer">
+	
+	<div class="wrap">
+		<table style="border: 0px;">
+		<tr>
+			<td style="width: 200px;">
+				<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=50011202500638" target="_blank"><img width="50px" height="72px" alt="" src="/images/sentrybox.gif"/></a>
+				<script id="_jiucuo_" sitecode='5000000041' src='http://pucha.kaipuyun.cn/exposure/jiucuo.js'></script>
+			</td>
+			<td style="width: 624px;">
+				<p class="visiterNum" style="vertical-align: top;">
+				您是第
+				<iframe width="85px" id="visiterCounter" scrolling="no"
+					allowtransparency="true" style="background-color: transparent;"
+					frameborder="0" height="16px"></iframe>
+				<a style="color: #828080;" href="https://tongji.baidu.com" target="_blank">位访者</a>
+				</p>
+				<p class="copyRight">
+					2013&nbsp;&nbsp;&nbsp;版权所有&nbsp;&nbsp;&nbsp;重庆市交通委员会&nbsp;&nbsp;&nbsp;联系电话：023-89183000&nbsp;&nbsp;&nbsp;传真：023-89183222&nbsp;&nbsp;&nbsp;<b
+						class="icon_ICP"></b>渝ICP备16007941号
+				</p>
+<div style="width:400px;margin:0 auto;">
+		 			<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=50011202500638" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">网站标识码：5000000041   渝公网安备 50011202500638号</p></a>
+				</div>
+				<p class="copyRight">技术支持：重庆旺山实业有限公司</p>
+			</td>
+			<td style="width: 50px;">
+
+				<script type="text/javascript">document.write(unescape("%3Cspan id='_ideConac' %3E%3C/span%3E%3Cscript src='http://dcs.conac.cn/js/04/000/0000/40180510/CA040000000401805100002.js' type='text/javascript'%3E%3C/script%3E"));</script>
+			</td>
+		</tr>
+		</table>
+		
+	</div>
+</div>
+
+
+    <!--footer End-->
+</div>
+</body>
+
+</html>

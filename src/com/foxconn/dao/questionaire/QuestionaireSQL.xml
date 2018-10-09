@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="QuestionaireSQL">
+	<typeAlias alias="SURVEY_ANSWER"
+		type="com.foxconn.pojo.questionaire.SURVEY_ANSWER" />
+	<typeAlias alias="SURVEY_OPTION"
+		type="com.foxconn.pojo.questionaire.SURVEY_OPTION" />
+	<typeAlias alias="SURVEY_QUESTION"
+		type="com.foxconn.pojo.questionaire.SURVEY_QUESTION" />
+	<typeAlias alias="SURVEY_QUESTIONAIRE"
+		type="com.foxconn.pojo.questionaire.SURVEY_QUESTIONAIRE" />
+	<typeAlias alias="SURVEY_RESPONDANT"
+		type="com.foxconn.pojo.questionaire.SURVEY_RESPONDANT" />
+
+	<select id="selQuestionaire" parameterClass="SURVEY_QUESTIONAIRE"
+		resultClass="SURVEY_QUESTIONAIRE">
+	<![CDATA[
+SELECT QTE_ID,
+			   QTE_TITLE,
+			   QTE_DES,
+			   to_char(QTE_EXPIRES,'yyyy.mm.dd') QTE_EXPIRES,
+			   SHOW_ON_INDEX,
+			   IS_DEL,
+			   CREATOR,
+			   to_char(CREATE_DATE,'yyyy.mm.dd') CREATE_DATE,
+			   EDITOR,
+			   EDIT_DATE
+		  FROM (SELECT ROWNUM rn, t.*
+				  FROM (  SELECT QTE_ID,
+								 QTE_TITLE,
+								 QTE_DES,
+								 QTE_EXPIRES,
+								 SHOW_ON_INDEX,
+								 IS_DEL,
+								 CREATOR,
+								 CREATE_DATE,
+								 EDITOR,
+								 EDIT_DATE
+							FROM SURVEY_QUESTIONAIRE
+						   WHERE     IS_DEL = 0
+								 AND QTE_TITLE LIKE '%' || #QTE_TITLE# || '%'
+						ORDER BY CREATE_DATE DESC) t
+				 WHERE ROWNUM <= #rEnd#)
+		 WHERE rn >= #rStart#
+	]]>
+	</select>
+
+	<select id="getQuestionaireCount" parameterClass="SURVEY_QUESTIONAIRE"
+		resultClass="Integer">
+	<![CDATA[
+SELECT COUNT (*)
+		  FROM SURVEY_QUESTIONAIRE
+		 WHERE IS_DEL = 0 AND QTE_TITLE LIKE '%' || #QTE_TITLE# || '%'	
+	]]>
+	</select>
+
+	<select id="selQuestionaireByID" parameterClass="SURVEY_QUESTIONAIRE"
+		resultClass="SURVEY_QUESTIONAIRE">
+	<![CDATA[
+		  SELECT QTE_ID,
+				 QTE_TITLE,
+				 QTE_DES,
+				 to_char(QTE_EXPIRES,'yyyy.mm.dd') QTE_EXPIRES,
+				 SHOW_ON_INDEX,
+				 IS_DEL,
+				 CREATOR,
+				 to_char(CREATE_DATE,'yyyy.mm.dd') CREATE_DATE,
+				 EDITOR,
+				 EDIT_DATE
+			FROM SURVEY_QUESTIONAIRE
+		   WHERE IS_DEL = 0 AND QTE_ID = #QTE_ID#
+ORDER BY CREATE_DATE DESC
+	]]>
+	</select>
+
+	<select id="selQuestion" parameterClass="SURVEY_QUESTION"
+		resultClass="SURVEY_QUESTION">
+	<![CDATA[
+		  SELECT QTN_ID,
+				 QTE_ID,
+				 QTN_TYPE,
+				 QTN_DES,
+				 IS_REQUISITE,
+				 IS_DEL,
+				 CREATOR,
+				 CREATE_DATE,
+				 EDITOR,
+				 EDIT_DATE
+			FROM SURVEY_QUESTION
+		   WHERE QTE_ID = #QTE_ID# AND IS_DEL = 0
+ORDER BY CREATE_DATE
+	]]>
+	</select>
+
+	<select id="selQuestionByID" parameterClass="SURVEY_QUESTION"
+		resultClass="SURVEY_QUESTION">
+	<![CDATA[
+		  SELECT QTN_ID,
+				 QTE_ID,
+				 QTN_TYPE,
+				 QTN_DES,
+				 IS_REQUISITE,
+				 IS_DEL,
+				 CREATOR,
+				 CREATE_DATE,
+				 EDITOR,
+				 EDIT_DATE
+			FROM SURVEY_QUESTION
+		   WHERE QTN_ID = #QTN_ID# AND IS_DEL = 0
+	]]>
+	</select>
+
+	<select id="selOption" parameterClass="SURVEY_OPTION"
+		resultClass="SURVEY_OPTION">
+	<![CDATA[
+		  SELECT a.OPN_ID,
+				 a.QTN_ID,
+				 a.OPN_DES,
+				 a.OPN_ORDER,
+				 a.IS_DEL,
+				 a.CREATOR,
+				 a.CREATE_DATE,
+				 a.EDITOR,
+				 a.EDIT_DATE
+			FROM    SURVEY_OPTION a
+				 JOIN
+					SURVEY_QUESTION b
+				 ON     A.QTN_ID = B.QTN_ID
+					AND B.QTE_ID = #QTE_ID#
+					AND a.is_del = 0
+					AND b.is_del = 0
+ORDER BY b.CREATE_DATE, a.OPN_ORDER
+	]]>
+	</select>
+
+	<select id="selOptionByQTNID" parameterClass="SURVEY_OPTION"
+		resultClass="SURVEY_OPTION">
+	<![CDATA[
+		  SELECT OPN_ID,
+				 QTN_ID,
+				 OPN_DES,
+				 OPN_ORDER,
+				 IS_DEL,
+				 CREATOR,
+				 CREATE_DATE,
+				 EDITOR,
+				 EDIT_DATE
+			FROM SURVEY_OPTION
+		   WHERE QTN_ID = #QTN_ID# and IS_DEL = 0
+ORDER BY OPN_ORDER
+	]]>
+	</select>
+
+	<select id="selStatisticResultList" parameterClass="java.lang.String"
+		resultClass="SURVEY_ANSWER">
+         SELECT   m.qte_id qte_id, m.qtn_id qte_qtn_id, m.qtn_des qte_qtn_des,
+         m.opn_id qte_opn_id, m.opn_des qte_opn_des,
+         m.create_date qte_create_date, m.opn_order qte_opn_order,
+         SUM (m.opn_id_1) sum_opn_id
+         FROM (SELECT a.qte_id, a.qtn_id, a.qtn_order, a.qtn_des, b.opn_id,
+                 b.opn_des, b.opn_order, c.asr_id,
+                 DECODE (c.opn_id, NULL, 0, '', 0, 1) opn_id_1,
+                 c.qtn_id qtn_id_1, c.rst_id, a.create_date
+            FROM survey_question a JOIN survey_option b
+                 ON a.qtn_id = b.qtn_id AND a.is_del = 0 AND b.is_del = 0
+                 LEFT JOIN survey_answer c
+                 ON a.qtn_id = c.qtn_id AND b.opn_id = c.opn_id
+                    AND a.is_del = 0
+           WHERE a.qte_id = #qteid# AND a.qtn_type != 3) m
+         GROUP BY m.qte_id,
+         m.qtn_id,
+         m.qtn_des,
+         m.opn_id,
+         m.opn_des,
+         m.create_date,
+         m.opn_order
+       ORDER BY m.create_date ASC, m.opn_order ASC
+	</select>
+
+	<select id="selRespondantCount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		SELECT count(RST_ID)
+		FROM SURVEY_RESPONDANT
+		WHERE QTE_ID = #qteID#
+	</select>
+	
+	<insert id="insRespondant" parameterClass="SURVEY_RESPONDANT">
+	<![CDATA[
+INSERT INTO SURVEY_RESPONDANT (RST_ID,
+								   QTE_ID,
+								   RST_IP,
+								   CREATE_DATE)
+		 VALUES (#RST_ID#,
+				 #QTE_ID#,
+				 #RST_IP#,
+				 SYSDATE)	
+	]]>
+	</insert>
+	
+	<insert id="insAnswer" parameterClass="SURVEY_ANSWER">
+	<![CDATA[
+INSERT INTO SURVEY_ANSWER (RST_ID, QTN_ID, OPN_ID)
+		 VALUES (#RST_ID#, #QTN_ID#, #OPN_ID#)	
+	]]>
+	</insert>	
+	
+	<!-- by H2603045 -->
+	<select id="getQuestionaireList" resultClass="SURVEY_QUESTIONAIRE" parameterClass="Map">
+		SELECT QTE_ID,QTE_TITLE,CREATE_DATE,QTE_EXPIRES from(
+			SELECT ROWNUM rn, t.* from(
+				SELECT QTE_ID,QTE_TITLE,
+				TO_CHAR (CREATE_DATE, 'yyyy-mm-dd') CREATE_DATE,
+				TO_CHAR (QTE_EXPIRES, 'yyyy-mm-dd') QTE_EXPIRES
+				FROM SURVEY_QUESTIONAIRE
+				WHERE IS_DEL = '0'
+			ORDER BY CREATE_DATE DESC) t
+		WHERE #rEnd# >= ROWNUM)
+	WHERE rn >= #rStart#
+	</select>
+	<select id="getQuestionaireCountNoDel" resultClass="java.lang.Integer">
+		SELECT COUNT (*)
+		FROM SURVEY_QUESTIONAIRE
+		WHERE IS_DEL = '0'
+	</select>
+	
+</sqlMap>

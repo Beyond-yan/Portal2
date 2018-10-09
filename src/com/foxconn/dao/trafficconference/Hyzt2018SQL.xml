@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Hyzt2018SQL">
+
+	<typeAlias alias="photoInfo" type="com.foxconn.pojo.index.PhotoInfo" />
+	<typeAlias alias="Catalog" type="com.foxconn.pojo.opencatalog.Catalog" />
+	<typeAlias alias="photosInfo" type="com.foxconn.pojo.trafficNews.PhotosInfo" />
+
+	<select id="getIndexNewsList" parameterClass="Map" resultClass="Catalog">
+		SELECT * FROM (
+		SELECT
+		c.news_id newsID,
+		A .News_Title newsTitle,
+		A
+		.news_summary newsSummary,
+		TO_CHAR ( A .entry_date, 'MM/dd' ) entryDate
+		FROM
+		TRAFFIC_PAGE_NEWS_REF_T c
+		JOIN Traffic_Text_News_Info_T A ON
+		c.news_id = A .NEWS_ID
+		JOIN
+		traffic_base_info_t T ON A .NEWS_SOURCE = T
+		.INFO_ID
+		AND c.is_del = '0'
+		JOIN Traffic_Base_Info_T b ON A .News_Status
+		= b.Info_ID
+		AND b.is_del =
+		'0'
+		AND A .is_del = '0'
+		WHERE
+		A .News_Part_Tag =
+		'1'
+		AND c.page_id = #programType#
+		AND A .NEWS_STATUS =
+		#newsStatus#
+		ORDER
+		BY
+		A .ENTRY_DATE DESC
+		)
+		WHERE
+		<![CDATA[ ROWNUM <= #rownum# ]]>
+	</select>
+
+	<select id="getIndexPhotosNews" resultClass="photoInfo">
+		<![CDATA[ SELECT * FROM (  
+			SELECT a.PHOTOS_NEWS_ID photosNewsID,
+                 b.PHOTO_URL photoURL,
+                 b.PHOTO_DESC photoDesc,
+                 PHOTO_ID photoID,
+                 A.PHOTOS_NEWS_TITLE photoTitle,
+                 a.IS_TEXT_NEWS isTextNews,
+                 trim(A.PROGRAM_TYPE) programType
+            FROM traffic_Photos_News_T a
+                 JOIN TRAFFIC_PHOTO_INFO_T b ON a.PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+                       AND b.IS_MAIN_PHOTO = '1' AND a.PHOTOS_NEWS_STATUS = 7 
+                       AND a.IS_DEL = '0' AND b.IS_DEL = '0'
+					   AND  a.PROGRAM_TYPE in ('011106','011107','011108','011109','0111010')
+                 LEFT JOIN traffic_text_news_info_t c ON A.PHOTOS_NEWS_ID = C.NEWS_ID
+           WHERE (C.PRESS_DATE <= SYSDATE OR c.PRESS_DATE IS NULL)
+        ORDER BY a.ENTRY_DATE DESC)
+ 		WHERE ROWNUM <= 5 ]]>
+	</select>
+
+	<select id="getPictureList" resultClass="photosInfo">
+		SELECT
+			A .PHOTO_ID photosID,
+			b .PHOTOS_NEWS_TITLE photosName,
+			A .PHOTO_URL photosUrl,
+			A .PHOTO_DESC photosDesc,
+			A .PHOTO_ORDER photosOrder,
+			A .IS_MAIN_PHOTO isMainPhotos,
+			A .PHOTOS_NEWS_ID photosNewsID
+		FROM
+			traffic_photo_info_t A
+		JOIN traffic_photos_news_t b ON A .PHOTOS_NEWS_ID = b.PHOTOS_NEWS_ID
+		AND A .is_del = '0'
+		AND b.is_del = '0'
+		AND b.PHOTOS_TYPE IN (1, 2)
+		ORDER BY
+			A .ENTRY_DATE DESC
+	</select>
+
+</sqlMap>

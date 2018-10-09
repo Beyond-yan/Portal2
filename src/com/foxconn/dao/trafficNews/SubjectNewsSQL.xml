@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="SubjectNews">
+ <typeAlias alias="subjectNews"  type="com.foxconn.pojo.trafficNews.SubjectNews"/>
+  
+  <!-- 获取专栏新闻列表 -->
+  <select id="getSubjectNewsList" resultClass="subjectNews">
+  SELECT column_id AS subjectId,
+         column_title AS subjectTitle,
+         column_photos_name AS subjectPhotosName,
+         column_photos_url AS subjectPhotosUrl,
+         column_url AS subjectUrl,
+         entry_user AS entryUser,
+         to_char(entry_date,'yyyy-mm-dd') AS entryDate,
+         modify_user AS modifyUser,
+         modify_date AS modifyDate
+    FROM traffic_special_column_t
+   WHERE is_del = '0'
+ORDER BY entry_date DESC
+  </select>
+  
+   <!-- 获取专栏新闻列表记录数 -->
+  <select id="getSubjectNewsListCount" resultClass="java.lang.Integer">
+  	select
+  	count(column_id)
+  	from
+  	traffic_special_column_t 
+  	where
+  	is_del = '0'
+  	order by 
+  	modify_date desc
+  </select>
+  
+   <!-- 判断是否存在需要在首页上显示的专栏新闻 -->
+  <select id="isExistSubjectShowOnIndex" resultClass="java.lang.Integer">
+  	select
+  	count(column_id) as myCount 
+  	from
+  	traffic_special_column_t 
+  	where
+  	is_show = '1'
+  	and
+  	is_del = '0'
+  </select>
+  
+  <!-- 获取需要在首页上显示的专栏新闻 -->
+  <select id="getSubjectInfoForShowOnIndex" resultClass="subjectNews">
+SELECT *
+  FROM (  SELECT column_id AS subjectId,
+                 column_title AS subjectTitle,
+                 column_photos_name AS subjectPhotosName,
+                 column_photos_url AS subjectPhotosUrl,
+                 column_url AS subjectUrl,
+                 entry_user AS entryUser,
+                 entry_date AS entryDate,
+                 modify_user AS modifyUser,
+                 modify_date AS modifyDate,
+                 IFRAME_URL
+            FROM traffic_special_column_t
+           WHERE is_show = '1' AND is_del = '0'
+        ORDER BY entry_date DESC)
+ WHERE ROWNUM = 1
+  </select>
+  
+  
+   <!-- 根据id获取专栏新闻信息 -->
+  <select id="getSubjectInfoByID" parameterClass="Map" resultClass="subjectNews">
+  	select
+  	column_id as subjectId,
+  	column_title as subjectTitle,
+  	column_photos_name as subjectPhotosName,
+  	column_photos_url as subjectPhotosUrl,
+  	column_url as subjectUrl,
+  	entry_user as entryUser,
+  	entry_date as entryDate,
+  	modify_user as modifyUser,
+  	modify_date as modifyDate
+  	from
+  	traffic_special_column_t
+  	where
+  	column_id = #subjectId#
+  </select>
+
+
+  
+</sqlMap>

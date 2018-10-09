@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+		"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="TrafficCosts">
+	<typeAlias alias="trafficCosts" type="com.foxconn.pojo.trafficcosts.TrafficCosts"/>
+
+	<select id="getTrafficCostsList" resultClass="trafficCosts" parameterClass="trafficCosts">
+		select ID,ENTRY_NAME,ACCORDING_TO_THE_DOCUMENT,
+			EXECUTE_FILE,NAME,NATURE,MANAGEMENT_STYLE,PAYMENT_METHOD,USE_NOTES,TO_CHAR (CREATE_TIME, 'SYYYY-MM-DD') AS CREATE_TIME 
+		from TRAFFIC_COSTS where IS_DEL='0'
+		<dynamic>
+			<isNotEmpty prepend="and" property="ID">
+				ID = #ID#	
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

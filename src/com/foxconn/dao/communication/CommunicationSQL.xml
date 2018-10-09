@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+ "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Communication">
+	<typeAlias alias="topic" type="com.foxconn.pojo.Communication.Topic" />
+	<typeAlias alias="opinion" type="com.foxconn.pojo.Communication.Opinion" />
+
+	<select id="getTopicList" resultClass="topic" parameterClass="Map">
+		<![CDATA[
+SELECT OPTION_ID,
+       OPTION_TITLE,
+       VALID_DATE_S,
+       VALID_DATE_E
+  FROM (SELECT ROWNUM rn, t.*
+          FROM (  SELECT OPTION_ID,
+                         OPTION_TITLE,
+                         TO_CHAR (VALID_DATE_S, 'yyyy-mm-dd') VALID_DATE_S,
+                         TO_CHAR (VALID_DATE_E, 'yyyy-mm-dd') VALID_DATE_E
+                    FROM TRAFFIC_OPTION_COLLECT_T
+                   WHERE option_status = 7 AND IS_DEL = '0'
+                ORDER BY VALID_DATE_S DESC) t
+         WHERE ROWNUM <= #rEnd#)
+ WHERE rn >= #rStart#
+		]]>
+	</select>
+
+	<select id="getTopicCount" resultClass="java.lang.Integer">
+		SELECT COUNT (*)
+		FROM
+		TRAFFIC_OPTION_COLLECT_T
+		WHERE option_status = 7 AND IS_DEL = '0'
+	</select>
+
+	<select id="getTopicDetails" parameterClass="String"
+		resultClass="topic">
+		<![CDATA[
+SELECT t1.option_id,
+       t1.option_title,
+       t1.option_content,
+       TO_CHAR (t1.valid_date_s, 'yyyy-mm-dd') AS valid_date_s,
+       TO_CHAR (t1.valid_date_e, 'yyyy-mm-dd') AS valid_date_e
+  FROM traffic_option_collect_t t1
+ WHERE t1.option_id = #topicID#
+ 		]]>
+	</select>
+
+	<insert id="insertOpinion" parameterClass="opinion">
+		INSERT INTO
+		TRAFFIC_OPTION_COMMEND_T (ID,
+		OPTION_ID,
+		IS_DEL,
+		USER_NAME,
+		USER_TEL,
+		USER_DEPT,
+		USER_MAIL,
+		USE_COMMEND,
+		USER_IP,
+		ENTRY_DATE,
+		MODIFY_USER)
+		VALUES (#ID#,
+		#OPTION_ID#,
+		'0',
+		#USER_NAME#,
+		#USER_TEL#,
+		#USER_DEPT#,
+		#USER_MAIL#,
+		#USE_COMMEND#,
+		#USER_IP#,
+		SYSDATE,
+		#MODIFY_USER#)
+	</insert>
+
+	<select id="getOpinionList" resultClass="opinion"
+		parameterClass="Map">
+		<![CDATA[
+SELECT USER_NAME,
+       ID,
+       USER_DEPT,
+       USER_MAIL,
+       USE_COMMEND
+  FROM (SELECT ROWNUM rn, t.*
+          FROM (  SELECT USER_NAME,
+                         ID,
+                         USER_DEPT,
+                         USER_MAIL,
+                         USE_COMMEND
+                    FROM TRAFFIC_OPTION_COMMEND_T
+                   WHERE     OPTION_ID = #topicID#
+                         AND approver_status = 1
+                         AND IS_DEL = '0'
+                ORDER BY ENTRY_DATE DESC) t
+         WHERE ROWNUM <= #rEnd#)
+ WHERE rn >= #rStart#
+		]]>
+	</select>
+
+	<select id="getOpinionCount" resultClass="Integer"
+		parameterClass="Map">
+		SELECT COUNT (*)
+		FROM TRAFFIC_OPTION_COMMEND_T
+		WHERE
+		option_id =
+		#topicID# AND IS_DEL =
+		'0'
+		<dynamic>
+			<isNotEmpty prepend="and" property="status">
+				approver_status =
+				#status#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>
